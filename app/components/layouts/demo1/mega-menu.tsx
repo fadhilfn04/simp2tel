@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { MegaMenuSubAccount } from '@/partials/mega-menu/mega-menu-sub-account';
 import { MegaMenuSubNetwork } from '@/partials/mega-menu/mega-menu-sub-network';
 import { MegaMenuSubProfiles } from '@/partials/mega-menu/mega-menu-sub-profiles';
-import { MENU_MEGA } from '@/config/menu.config';
 import { cn } from '@/lib/utils';
 import { useMenu } from '@/hooks/use-menu';
 import {
@@ -21,11 +20,6 @@ import { MegaMenuSubApps } from '@/app/components/partials/mega-menu/mega-menu-s
 export function MegaMenu() {
   const pathname = usePathname();
   const { isActive, hasActiveChild } = useMenu(pathname);
-  const homeItem = MENU_MEGA[0];
-  const publicProfilesItem = MENU_MEGA[1];
-  const myAccountItem = MENU_MEGA[2];
-  const networkItem = MENU_MEGA[3];
-  const appsStore = MENU_MEGA[4];
 
   const linkClass = `
     text-sm text-secondary-foreground font-medium 
@@ -39,7 +33,7 @@ export function MegaMenu() {
     <NavigationMenu>
       <NavigationMenuList className="gap-0">
         {/* Home Item */}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Link
               href={homeItem.path || '/'}
@@ -49,10 +43,10 @@ export function MegaMenu() {
               {homeItem.title}
             </Link>
           </NavigationMenuLink>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
 
         {/* Public Profiles Item */}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger
             className={cn(linkClass)}
             data-active={
@@ -64,10 +58,10 @@ export function MegaMenu() {
           <NavigationMenuContent className="p-0">
             <MegaMenuSubProfiles items={MENU_MEGA} />
           </NavigationMenuContent>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
 
         {/* My Account Item */}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger
             className={cn(linkClass)}
             data-active={hasActiveChild(myAccountItem.children) || undefined}
@@ -77,10 +71,10 @@ export function MegaMenu() {
           <NavigationMenuContent className="p-0">
             <MegaMenuSubAccount items={MENU_MEGA} />
           </NavigationMenuContent>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
 
         {/* Network Item */}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger
             className={cn(linkClass)}
             data-active={
@@ -92,10 +86,10 @@ export function MegaMenu() {
           <NavigationMenuContent className="p-0">
             <MegaMenuSubNetwork items={MENU_MEGA} />
           </NavigationMenuContent>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
 
         {/* Apps Item */}
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger
             className={cn(linkClass)}
             data-active={hasActiveChild(appsStore.children || []) || undefined}
@@ -105,7 +99,7 @@ export function MegaMenu() {
           <NavigationMenuContent className="p-0">
             <MegaMenuSubApps items={MENU_MEGA} />
           </NavigationMenuContent>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
       </NavigationMenuList>
     </NavigationMenu>
   );

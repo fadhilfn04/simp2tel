@@ -5,7 +5,6 @@ import { JSX, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LucideIcon } from 'lucide-react';
-import { MENU_MEGA_MOBILE } from '@/config/menu.config';
 import { cn } from '@/lib/utils';
 import {
   AccordionMenu,
@@ -209,18 +208,4 @@ export function MegaMenuMobile() {
   const buildMenuHeading = (item: MenuItem, index: number): JSX.Element => {
     return <AccordionMenuLabel key={index}>{item.heading}</AccordionMenuLabel>;
   };
-
-  return (
-    <div className="flex grow shrink-0 py-5 px-5">
-      <AccordionMenu
-        selectedValue={pathname}
-        matchPath={matchPath}
-        type="single"
-        collapsible
-        classNames={classNames}
-      >
-        {buildMenu(MENU_MEGA_MOBILE)}
-      </AccordionMenu>
-    </div>
-  );
 }

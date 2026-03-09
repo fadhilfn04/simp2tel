@@ -60,11 +60,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         icon: ShieldCheck,
         path: '/user-management/account/security',
       },
-      logs: {
-        title: 'Logs',
-        icon: AudioLines,
-        path: '/user-management/account/logs',
-      },
+      // logs: {
+      //   title: 'Logs',
+      //   icon: AudioLines,
+      //   path: '/user-management/account/logs',
+      // },
     }),
     [],
   );

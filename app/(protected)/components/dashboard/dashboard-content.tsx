@@ -1,39 +1,55 @@
-import {
-  ChannelStats,
-  EarningsChart,
-  EntryCallout,
-  Highlights,
-  TeamMeeting,
-  Teams,
-} from '.';
+import { StatisticsCards } from './StatisticsCards';
+import { LatestMembers } from './LatestMembers';
+import { LatestClaims } from './LatestClaims';
+import { LatestSocial } from './LatestSocial';
+import { useDashboardStats, useLatestData } from '@/lib/hooks/use-dashboard-api';
 
 export function DashboardContent() {
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
+  const { data: latestData, isLoading: latestLoading } = useLatestData('both', 5);
+
   return (
-    <div className="grid gap-5 lg:gap-7.5">
-      <div className="grid lg:grid-cols-3 gap-y-5 lg:gap-7.5 items-stretch">
+    <div className="space-y-6">
+      {/* Statistics Cards */}
+      <StatisticsCards
+        stats={stats || {
+          totalAnggota: 0,
+          anggotaAktif: 0,
+          anggotaMeninggal: 0,
+          totalKlaim: 0,
+          klaimPending: 0,
+          totalDicairkan: 0,
+          totalDanaSosial: 0,
+          danaSosialPending: 0,
+          totalDanaSosialDicairkan: 0,
+        }}
+        isLoading={statsLoading}
+      />
+
+      {/* Latest Data Lists */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Latest Members - Full width on mobile, 1 column on desktop */}
         <div className="lg:col-span-1">
-          <div className="grid grid-cols-2 gap-5 lg:gap-7.5 h-full items-stretch">
-            <ChannelStats />
-          </div>
+          <LatestMembers
+            members={latestData?.anggota || []}
+            isLoading={latestLoading}
+          />
         </div>
-        <div className="lg:col-span-2">
-          <EntryCallout className="h-full" />
-        </div>
-      </div>
-      <div className="grid lg:grid-cols-3 gap-5 lg:gap-7.5 items-stretch">
+
+        {/* Latest Claims - Full width on mobile, 1 column on desktop */}
         <div className="lg:col-span-1">
-          <Highlights limit={3} />
+          <LatestClaims
+            claims={latestData?.klaim || []}
+            isLoading={latestLoading}
+          />
         </div>
-        <div className="lg:col-span-2">
-          <EarningsChart />
-        </div>
-      </div>
-      <div className="grid lg:grid-cols-3 gap-5 lg:gap-7.5 items-stretch">
+
+        {/* Latest Social - Full width on mobile, 1 column on desktop */}
         <div className="lg:col-span-1">
-          <TeamMeeting />
-        </div>
-        <div className="lg:col-span-2">
-          <Teams />
+          <LatestSocial
+            social={latestData?.sosial || []}
+            isLoading={latestLoading}
+          />
         </div>
       </div>
     </div>

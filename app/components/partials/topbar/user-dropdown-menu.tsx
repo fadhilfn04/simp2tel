@@ -81,7 +81,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
         <DropdownMenuSeparator />
 
         {/* Menu Items */}
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link
             href="/public-profile/profiles/default"
             className="flex items-center gap-2"
@@ -89,8 +89,8 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             <UserCircle />
             Public Profile
           </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        </DropdownMenuItem> */}
+        {/* <DropdownMenuItem asChild>
           <Link
             href="/account/home/user-profile"
             className="flex items-center gap-2"
@@ -98,10 +98,10 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             <User />
             My Profile
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         {/* My Account Submenu */}
-        <DropdownMenuSub>
+        {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2">
             <Settings />
             My Account
@@ -162,9 +162,9 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
               </Link>
             </DropdownMenuItem>
           </DropdownMenuSubContent>
-        </DropdownMenuSub>
+        </DropdownMenuSub> */}
 
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link
             href="https://devs.keenthemes.com"
             className="flex items-center gap-2"
@@ -172,7 +172,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
             <FileText />
             Dev Forum
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         {/* Language Submenu with Radio Group */}
         <DropdownMenuSub>

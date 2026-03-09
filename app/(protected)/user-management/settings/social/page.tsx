@@ -32,12 +32,12 @@ const SocialSettingsPage = () => {
   const form = useForm<SocialSettingsSchemaType>({
     resolver: zodResolver(SocialSettingsSchema),
     defaultValues: {
-      socialFacebook: settings.socialFacebook || '',
-      socialTwitter: settings.socialTwitter || '',
-      socialInstagram: settings.socialInstagram || '',
-      socialLinkedIn: settings.socialLinkedIn || '',
-      socialPinterest: settings.socialPinterest || '',
-      socialYoutube: settings.socialYoutube || '',
+      socialFacebook: '',
+      socialTwitter: '',
+      socialInstagram: '',
+      socialLinkedIn: '',
+      socialPinterest: '',
+      socialYoutube: '',
     },
     mode: 'onSubmit',
   });

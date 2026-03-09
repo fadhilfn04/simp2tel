@@ -104,18 +104,9 @@ const NotificationSettingsPage = () => {
     >(
       (defaults, { emailField, webField, roleIdsField }) => ({
         ...defaults,
-        [emailField]:
-          (settings as NotificationSettingsSchemaType)[
-            emailField as keyof NotificationSettingsSchemaType
-          ] ?? false,
-        [webField]:
-          (settings as NotificationSettingsSchemaType)[
-            webField as keyof NotificationSettingsSchemaType
-          ] ?? false,
-        [roleIdsField]:
-          (settings as NotificationSettingsSchemaType)[
-            roleIdsField as keyof NotificationSettingsSchemaType
-          ] ?? [],
+        [emailField]: false,
+        [webField]: false,
+        [roleIdsField]: [],
       }),
       {},
     ),

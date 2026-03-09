@@ -76,7 +76,7 @@ export default function Page() {
       >
         <div className="space-y-1.5 pb-3">
           <h1 className="text-2xl font-semibold tracking-tight text-center">
-            Sign in to SIMP2TEL
+            Masuk ke SIMP2TEL
           </h1>
         </div>
 
@@ -85,14 +85,13 @@ export default function Page() {
             <RiErrorWarningFill className="text-primary" />
           </AlertIcon>
           <AlertTitle className="text-accent-foreground">
-            Use <span className="text-mono font-semibold">demo@p2tel.or.id</span>{' '}
-            username and{' '}
-            <span className="text-mono font-semibold">Demo123@.</span> for demo
-            access.
+            Gunakan email <span className="text-mono font-semibold">demo@p2tel.or.id</span>{' '}
+            dan{' '}
+            <span className="text-mono font-semibold">Demo123@.</span> untuk akses demo.
           </AlertTitle>
         </Alert>
 
-        <div className="flex flex-col gap-3.5">
+        {/* <div className="flex flex-col gap-3.5">
           <Button
             variant="outline"
             type="button"
@@ -110,7 +109,7 @@ export default function Page() {
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">or</span>
           </div>
-        </div>
+        </div> */}
 
         {error && (
           <Alert variant="destructive">
@@ -146,7 +145,7 @@ export default function Page() {
                   href="/reset-password"
                   className="text-sm font-semibold text-foreground hover:text-primary"
                 >
-                  Forgot Password?
+                  Lupa Password?
                 </Link>
               </div>
               <div className="relative">
@@ -193,7 +192,7 @@ export default function Page() {
                   htmlFor="remember-me"
                   className="text-sm leading-none text-muted-foreground"
                 >
-                  Remember me
+                  Ingat saya
                 </label>
               </>
             )}
@@ -203,17 +202,17 @@ export default function Page() {
         <div className="flex flex-col gap-2.5">
           <Button type="submit" disabled={isProcessing}>
             {isProcessing ? <LoaderCircleIcon className="size-4 animate-spin" /> : null}
-            Continue
+            Masuk
           </Button>
         </div>
 
         <p className="text-sm text-muted-foreground text-center">
-          Don&apos;t have an account?{' '}
+          Tidak punya akun?{' '}
           <Link
             href="/signup"
             className="text-sm font-semibold text-foreground hover:text-primary"
           >
-            Sign Up
+            Daftar
           </Link>
         </p>
       </form>

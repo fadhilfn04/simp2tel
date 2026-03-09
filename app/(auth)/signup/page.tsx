@@ -115,11 +115,11 @@ export default function Page() {
         <form onSubmit={handleSubmit} className="block w-full space-y-5">
           <div className="space-y-1.5 pb-3">
             <h1 className="text-2xl font-semibold tracking-tight text-center">
-              Sign Up to Metronic
+              Daftar ke SIMP2TEL
             </h1>
           </div>
 
-          <div className="flex flex-col gap-3.5">
+          {/* <div className="flex flex-col gap-3.5">
             <Button
               variant="outline"
               type="button"
@@ -138,7 +138,7 @@ export default function Page() {
                 or
               </span>
             </div>
-          </div>
+          </div> */}
 
           {error && (
             <Alert variant="destructive" onClose={() => setError(null)}>
@@ -154,9 +154,9 @@ export default function Page() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Nama</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your Name" {...field} />
+                  <Input placeholder="Nama anda" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -170,7 +170,7 @@ export default function Page() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your email" {...field} />
+                  <Input placeholder="Email anda" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -185,7 +185,7 @@ export default function Page() {
                 <FormLabel>Password</FormLabel>
                 <div className="relative">
                   <Input
-                    placeholder="Your password"
+                    placeholder="Password anda"
                     type={passwordVisible ? 'text' : 'password'}
                     {...field}
                   />
@@ -197,7 +197,7 @@ export default function Page() {
                     onClick={() => setPasswordVisible(!passwordVisible)}
                     className="absolute end-0 top-1/2 -translate-y-1/2 h-7 w-7 me-1.5 bg-transparent!"
                     aria-label={
-                      passwordVisible ? 'Hide password' : 'Show password'
+                      passwordVisible ? 'Sembunyikan password' : 'Tampilkan password'
                     }
                   >
                     {passwordVisible ? (
@@ -217,12 +217,12 @@ export default function Page() {
             name="passwordConfirmation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>Konfirmasi Password</FormLabel>
                 <div className="relative">
                   <Input
                     type={passwordConfirmationVisible ? 'text' : 'password'}
                     {...field}
-                    placeholder="Confirm your password"
+                    placeholder="Konfirmasi password anda"
                   />
                   <Button
                     type="button"
@@ -237,8 +237,8 @@ export default function Page() {
                     className="absolute end-0 top-1/2 -translate-y-1/2 h-7 w-7 me-1.5 bg-transparent!"
                     aria-label={
                       passwordConfirmationVisible
-                        ? 'Hide password confirmation'
-                        : 'Show password confirmation'
+                        ? 'Sembunyikan konfirmasi password'
+                        : 'Tampilkan konfirmasi password'
                     }
                   >
                     {passwordConfirmationVisible ? (
@@ -270,14 +270,14 @@ export default function Page() {
                         htmlFor="accept"
                         className="text-sm leading-none text-muted-foreground"
                       >
-                        I agree to the
+                        Saya setuju dengan
                       </label>
                       <Link
                         href="/privacy-policy"
                         target="_blank"
                         className="-ms-0.5 text-sm font-semibold text-foreground hover:text-primary"
                       >
-                        Privacy Policy
+                        Ketentuan & Kebijakan Privasi
                       </Link>
                     </div>
                   </FormControl>
@@ -301,19 +301,19 @@ export default function Page() {
                   {isProcessing ? (
                     <LoaderCircleIcon className="size-4 animate-spin" />
                   ) : null}
-                  Continue
+                  Lanjutkan
                 </Button>
               }
             />
           </div>
 
           <div className="text-sm text-muted-foreground text-center">
-            Already have an account?{' '}
+            Sudah punya akun?{' '}
             <Link
               href="/signin"
               className="text-sm text-sm font-semibold text-foreground hover:text-primary"
             >
-              Sign In
+              Masuk
             </Link>
           </div>
         </form>
