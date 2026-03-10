@@ -10,7 +10,7 @@ export default function Page() {
   return (
     <div className="space-y-10">
       <UserProfile user={user} isLoading={isLoading} />
-      <UserDangerZone user={user} isLoading={isLoading} />
+      {/* <UserDangerZone user={user} isLoading={isLoading} /> */}
     </div>
   );
 }

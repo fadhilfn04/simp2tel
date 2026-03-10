@@ -25,22 +25,30 @@ interface ApiError {
 // Fetch all anggota with filters
 export function useAnggotaList(params: {
   search?: string;
+  kategori_anggota?: string;
   status_anggota?: string;
-  jenis_anggota?: string;
+  status_mps?: string;
   status_iuran?: string;
+  nama_cabang?: string;
   page?: number;
   limit?: number;
 }) {
   const queryParams = new URLSearchParams();
   if (params.search) queryParams.set('search', params.search);
+  if (params.kategori_anggota && params.kategori_anggota !== 'all') {
+    queryParams.set('kategori_anggota', params.kategori_anggota);
+  }
   if (params.status_anggota && params.status_anggota !== 'all') {
     queryParams.set('status_anggota', params.status_anggota);
   }
-  if (params.jenis_anggota && params.jenis_anggota !== 'all') {
-    queryParams.set('jenis_anggota', params.jenis_anggota);
+  if (params.status_mps && params.status_mps !== 'all') {
+    queryParams.set('status_mps', params.status_mps);
   }
   if (params.status_iuran && params.status_iuran !== 'all') {
     queryParams.set('status_iuran', params.status_iuran);
+  }
+  if (params.nama_cabang && params.nama_cabang !== 'all') {
+    queryParams.set('nama_cabang', params.nama_cabang);
   }
   queryParams.set('page', String(params.page || 1));
   queryParams.set('limit', String(params.limit || 10));

@@ -86,20 +86,20 @@ const UserProfile = ({
         <CardContent>
           <dl className="grid grid-cols-[auto_1fr] gap-3 text-sm mb-5 [&_dt]:text-muted-foreground">
             <div className="grid grid-cols-subgrid col-span-2 items-baseline">
-              <dt className="flex md:w-64">Full name:</dt>
+              <dt className="flex md:w-64">Nama Lengkap:</dt>
               <dd>{user.name || 'Not available'}</dd>
             </div>
             <div className="grid grid-cols-subgrid col-span-2 items-baseline">
-              <dt>Email address:</dt>
+              <dt>Alamat Email:</dt>
               <dd className="flex items-center gap-2.5">
                 <span>{user.email}</span>
                 {user.emailVerifiedAt ? (
                   <Badge variant="secondary" appearance="light">
-                    Verified
+                    Terverifikasi
                   </Badge>
                 ) : (
                   <Badge variant="warning" appearance="light">
-                    Not verified
+                    Belum Terverifikasi
                   </Badge>
                 )}
               </dd>
@@ -132,7 +132,7 @@ const UserProfile = ({
               </dd>
             </div>
             <div className="grid grid-cols-subgrid col-span-2 items-baseline">
-              <dt>Last Sign In:</dt>
+              <dt>Terakhir Masuk:</dt>
               <dd>
                 {user.lastSignInAt
                   ? formatDateTime(new Date(user.lastSignInAt))
@@ -145,7 +145,7 @@ const UserProfile = ({
             disabled={user.role?.isProtected}
             onClick={() => setEditDialogOpen(true)}
           >
-            Edit user details
+            Perbarui detail pengguna
           </Button>
         </CardContent>
       </Card>

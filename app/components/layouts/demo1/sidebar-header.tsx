@@ -35,7 +35,7 @@ export function SidebarHeader() {
 
         <div className="hidden dark:flex items-center gap-3">
           <img
-            src={toAbsoluteUrl('/media/app/default-logo-dark.svg')}
+            src={toAbsoluteUrl('/media/app/logo-p2tel.png')}
             className="default-logo h-[50px] max-w-none"
             alt="Default Dark Logo"
           />

@@ -94,7 +94,7 @@ export default function DanaKematianPage() {
   // API hooks
   const { data: danaKematianData, isLoading } = useDanaKematianList({
     search: searchQuery,
-    status_pengajuan: selectedStatus,
+    status_proses: selectedStatus,
     tanggal_meninggal_from: dateFrom,
     tanggal_meninggal_to: dateTo,
     page: pagination.pageIndex + 1,
@@ -104,7 +104,7 @@ export default function DanaKematianPage() {
   // Fetch members for dropdown (only for create mode)
   const { data: membersData } = useAnggotaList({
     search: '',
-    status_anggota: 'Meninggal',
+    status_anggota: 'meninggal',
     page: 1,
     limit: 1000,
   });
@@ -124,19 +124,15 @@ export default function DanaKematianPage() {
     setToast({ show: false, message: '', type: 'success' });
   };
 
-  const getStatusProps = (status: DanaKematian['status_pengajuan']) => {
+  const getStatusProps = (status: DanaKematian['status_proses']) => {
     switch (status) {
-      case 'Pending':
-        return { variant: 'secondary' as const, label: 'Pending' };
-      case 'Dalam Proses':
-        return { variant: 'info' as const, label: 'Proses' };
-      case 'Disetujui':
-        return { variant: 'success' as const, label: 'Disetujui' };
-      case 'Ditolak':
-        return { variant: 'destructive' as const, label: 'Ditolak' };
-      case 'Dibayar':
-        return { variant: 'warning' as const, label: 'Dibayar' };
-      case 'Selesai':
+      case 'dilaporkan':
+        return { variant: 'secondary' as const, label: 'Dilaporkan' };
+      case 'verifikasi_cabang':
+        return { variant: 'warning' as const, label: 'Verifikasi Cabang' };
+      case 'proses_pusat':
+        return { variant: 'warning' as const, label: 'Proses Pusat' };
+      case 'selesai':
         return { variant: 'success' as const, label: 'Selesai' };
       default:
         return { variant: 'secondary' as const, label: status };
@@ -233,19 +229,19 @@ export default function DanaKematianPage() {
         ),
       },
       {
-        accessorKey: 'jumlah_uang_duka',
+        accessorKey: 'besaran_dana_kematian',
         header: 'JUMLAH',
         cell: ({ row }) => (
           <span className="font-semibold text-green-600 text-xs sm:text-sm">
-            {formatCurrency(row.original.jumlah_uang_duka)}
+            {formatCurrency(row.original.besaran_dana_kematian)}
           </span>
         ),
       },
       {
-        accessorKey: 'status_pengajuan',
+        accessorKey: 'status_proses',
         header: 'STATUS',
         cell: ({ row }) => {
-          const props = getStatusProps(row.original.status_pengajuan);
+          const props = getStatusProps(row.original.status_proses);
           return (
             <Badge variant={props.variant} appearance="ghost" className="text-xs">
               <BadgeDot />
@@ -282,7 +278,7 @@ export default function DanaKematianPage() {
                 setEditClaimId(row.original.id);
                 setEditModalOpen(true);
               }}
-              disabled={!row.original.id || row.original.status_pengajuan === 'Dibayar' || row.original.status_pengajuan === 'Selesai'}
+              disabled={!row.original.id || row.original.status_proses === 'selesai'}
             >
               <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
@@ -296,7 +292,7 @@ export default function DanaKematianPage() {
                 setClaimToDelete(row.original);
                 setDeleteConfirmOpen(true);
               }}
-              disabled={row.original.status_pengajuan === 'Dibayar' || row.original.status_pengajuan === 'Selesai'}
+              disabled={row.original.status_proses === 'selesai'}
             >
               <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
@@ -371,12 +367,10 @@ export default function DanaKematianPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Semua Status</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Dalam Proses">Dalam Proses</SelectItem>
-                    <SelectItem value="Disetujui">Disetujui</SelectItem>
-                    <SelectItem value="Ditolak">Ditolak</SelectItem>
-                    <SelectItem value="Dibayar">Dibayar</SelectItem>
-                    <SelectItem value="Selesai">Selesai</SelectItem>
+                    <SelectItem value="dilaporkan">Dilaporkan</SelectItem>
+                    <SelectItem value="verifikasi_cabang">Verifikasi Cabang</SelectItem>
+                    <SelectItem value="proses_pusat">Proses Pusat</SelectItem>
+                    <SelectItem value="selesai">Selesai</SelectItem>
                   </SelectContent>
                 </Select>
 

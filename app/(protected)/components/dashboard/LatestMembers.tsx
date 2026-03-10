@@ -115,8 +115,8 @@ export function LatestMembers({ members, isLoading }: LatestMembersProps) {
                   <TableRow key={member.id}>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{member.nama}</div>
-                        <div className="text-xs text-muted-foreground font-mono">{member.nikap}</div>
+                        <div className="font-medium">{member.nama_anggota}</div>
+                        <div className="text-xs text-muted-foreground font-mono">{member.nik}</div>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -127,10 +127,10 @@ export function LatestMembers({ members, isLoading }: LatestMembersProps) {
                             <span className="truncate max-w-[150px]">{member.email}</span>
                           </div>
                         )}
-                        {member.nomor_kontak && (
+                        {member.nomor_handphone && (
                           <div className="flex items-center gap-1 text-xs">
                             <Phone className="h-3 w-3 text-muted-foreground" />
-                            <span>{member.nomor_kontak}</span>
+                            <span>{member.nomor_handphone}</span>
                           </div>
                         )}
                       </div>
@@ -144,7 +144,7 @@ export function LatestMembers({ members, isLoading }: LatestMembersProps) {
                     <TableCell>
                       <div className="flex items-center gap-1 text-xs">
                         <MapPin className="h-3 w-3 text-muted-foreground" />
-                        <span>{member.cabang_domisili}</span>
+                        <span>{member.nama_cabang}</span>
                       </div>
                     </TableCell>
                     <TableCell>

@@ -4,13 +4,14 @@ import { supabase, UpdateDanaKematianInput } from '@/lib/supabase';
 // GET /api/dana-kematian/[id] - Get single death benefit claim by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data: danaKematian, error } = await supabase
       .from('dana_kematian')
-      .select('*, anggota!inner(nama, nikap, cabang_domisili)')
-      .eq('id', params.id)
+      .select('*')
+      .eq('id', id)
       .is('deleted_at', null)
       .single();
 
@@ -34,16 +35,17 @@ export async function GET(
 // PUT /api/dana-kematian/[id] - Update death benefit claim
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body: UpdateDanaKematianInput = await request.json();
 
     // Check if claim exists
     const { data: existingClaim } = await supabase
       .from('dana_kematian')
       .select('id')
-      .eq('id', params.id)
+      .eq('id', id)
       .is('deleted_at', null)
       .single();
 
@@ -54,32 +56,32 @@ export async function PUT(
       );
     }
 
-    // Check for duplicate death certificate (if changed)
-    if (body.no_surat_kematian) {
-      const { data: duplicateCert } = await supabase
-        .from('dana_kematian')
-        .select('id')
-        .eq('no_surat_kematian', body.no_surat_kematian)
-        .neq('id', params.id)
-        .is('deleted_at', null)
-        .single();
-
-      if (duplicateCert) {
-        return NextResponse.json(
-          { error: 'Nomor surat kematian already exists' },
-          { status: 409 }
-        );
-      }
-    }
-
     // Update dana kematian
     const { data: updatedDanaKematian, error } = await supabase
       .from('dana_kematian')
       .update({
         ...body,
+        penyebab_meninggal: body.penyebab_meninggal !== undefined ? body.penyebab_meninggal : undefined,
+        tanggal_lapor_keluarga: body.tanggal_lapor_keluarga !== undefined ? body.tanggal_lapor_keluarga : undefined,
+        cabang_nama_pelapor: body.cabang_nama_pelapor !== undefined ? body.cabang_nama_pelapor : undefined,
+        cabang_nik_pelapor: body.cabang_nik_pelapor !== undefined ? body.cabang_nik_pelapor : undefined,
+        cabang_tanggal_awal_terima_berkas: body.cabang_tanggal_awal_terima_berkas !== undefined ? body.cabang_tanggal_awal_terima_berkas : undefined,
+        cabang_tanggal_kirim_ke_pusat: body.cabang_tanggal_kirim_ke_pusat !== undefined ? body.cabang_tanggal_kirim_ke_pusat : undefined,
+        pusat_tanggal_awal_terima: body.pusat_tanggal_awal_terima !== undefined ? body.pusat_tanggal_awal_terima : undefined,
+        pusat_tanggal_validasi: body.pusat_tanggal_validasi !== undefined ? body.pusat_tanggal_validasi : undefined,
+        pusat_tanggal_selesai: body.pusat_tanggal_selesai !== undefined ? body.pusat_tanggal_selesai : undefined,
+        cabang_tanggal_serah_ke_ahli_waris: body.cabang_tanggal_serah_ke_ahli_waris !== undefined ? body.cabang_tanggal_serah_ke_ahli_waris : undefined,
+        cabang_tanggal_lapor_ke_pusat: body.cabang_tanggal_lapor_ke_pusat !== undefined ? body.cabang_tanggal_lapor_ke_pusat : undefined,
+        file_sk_pensiun: body.file_sk_pensiun !== undefined ? body.file_sk_pensiun : undefined,
+        file_surat_kematian: body.file_surat_kematian !== undefined ? body.file_surat_kematian : undefined,
+        file_surat_pernyataan_ahli_waris: body.file_surat_pernyataan_ahli_waris !== undefined ? body.file_surat_pernyataan_ahli_waris : undefined,
+        file_kartu_keluarga: body.file_kartu_keluarga !== undefined ? body.file_kartu_keluarga : undefined,
+        file_e_ktp: body.file_e_ktp !== undefined ? body.file_e_ktp : undefined,
+        file_surat_nikah: body.file_surat_nikah !== undefined ? body.file_surat_nikah : undefined,
+        keterangan: body.keterangan !== undefined ? body.keterangan : undefined,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -108,14 +110,15 @@ export async function PUT(
 // DELETE /api/dana-kematian/[id] - Soft delete death benefit claim
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check if claim exists
     const { data: existingClaim } = await supabase
       .from('dana_kematian')
-      .select('id, status_pengajuan')
-      .eq('id', params.id)
+      .select('id, status_proses')
+      .eq('id', id)
       .is('deleted_at', null)
       .single();
 
@@ -126,10 +129,10 @@ export async function DELETE(
       );
     }
 
-    // Prevent deletion if already paid or completed
-    if (existingClaim.status_pengajuan === 'Dibayar' || existingClaim.status_pengajuan === 'Selesai') {
+    // Prevent deletion if already completed
+    if (existingClaim.status_proses === 'selesai') {
       return NextResponse.json(
-        { error: 'Cannot delete claim that has been paid or completed' },
+        { error: 'Cannot delete claim that has been completed' },
         { status: 400 }
       );
     }
@@ -138,7 +141,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('dana_kematian')
       .update({ deleted_at: new Date().toISOString() })
-      .eq('id', params.id);
+      .eq('id', id);
 
     if (error) {
       console.error('Error deleting dana kematian:', error);

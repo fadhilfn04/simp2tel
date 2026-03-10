@@ -7,9 +7,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
+    const kategori_anggota = searchParams.get('kategori_anggota') || 'all';
     const status_anggota = searchParams.get('status_anggota') || 'all';
-    const jenis_anggota = searchParams.get('jenis_anggota') || 'all';
+    const status_mps = searchParams.get('status_mps') || 'all';
     const status_iuran = searchParams.get('status_iuran') || 'all';
+    const nama_cabang = searchParams.get('nama_cabang') || 'all';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = (page - 1) * limit;
@@ -21,18 +23,24 @@ export async function GET(request: NextRequest) {
 
     // Search filter
     if (search) {
-      query = query.or(`nama.ilike.%${search}%,nikap.ilike.%${search}%,cabang_domisili.ilike.%${search}%`);
+      query = query.or(`nama_anggota.ilike.%${search}%,nik.ilike.%${search}%,nama_cabang.ilike.%${search}%`);
     }
 
     // Status filters
+    if (kategori_anggota !== 'all') {
+      query = query.eq('kategori_anggota', kategori_anggota);
+    }
     if (status_anggota !== 'all') {
       query = query.eq('status_anggota', status_anggota);
     }
-    if (jenis_anggota !== 'all') {
-      query = query.eq('jenis_anggota', jenis_anggota);
+    if (status_mps !== 'all') {
+      query = query.eq('status_mps', status_mps);
     }
     if (status_iuran !== 'all') {
       query = query.eq('status_iuran', status_iuran);
+    }
+    if (nama_cabang !== 'all') {
+      query = query.eq('nama_cabang', nama_cabang);
     }
 
     // Get paginated data
@@ -73,11 +81,8 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     const requiredFields = [
-      'nikap', 'nik_ktp', 'nama', 'status_anggota', 'jenis_anggota',
-      'status_iuran', 'status_kesehatan', 'tempat_lahir', 'tanggal_lahir',
-      'jenis_kelamin', 'agama', 'status_perkawinan', 'sk_pensiun',
-      'nomor_kontak', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan',
-      'kota', 'kode_pos', 'cabang_domisili'
+      'nik', 'nama_anggota', 'kategori_anggota', 'status_anggota',
+      'status_mps', 'status_iuran', 'nama_cabang', 'posisi_kepengurusan', 'alamat'
     ];
 
     for (const field of requiredFields) {
@@ -89,32 +94,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check for duplicate NIKAP
-    const { data: existingNikap } = await supabase
+    // Check for duplicate NIK
+    const { data: existingNik } = await supabase
       .from('anggota')
       .select('id')
-      .eq('nikap', body.nikap)
+      .eq('nik', body.nik)
       .is('deleted_at', null)
       .single();
 
-    if (existingNikap) {
+    if (existingNik) {
       return NextResponse.json(
-        { error: 'NIKAP already exists' },
-        { status: 409 }
-      );
-    }
-
-    // Check for duplicate NIK KTP
-    const { data: existingNikKtp } = await supabase
-      .from('anggota')
-      .select('id')
-      .eq('nik_ktp', body.nik_ktp)
-      .is('deleted_at', null)
-      .single();
-
-    if (existingNikKtp) {
-      return NextResponse.json(
-        { error: 'NIK KTP already exists' },
+        { error: 'NIK already exists' },
         { status: 409 }
       );
     }
@@ -124,10 +114,42 @@ export async function POST(request: NextRequest) {
       .from('anggota')
       .insert([{
         ...body,
+        alamat: body.alamat || null,
+        rt: body.rt || null,
+        rw: body.rw || null,
+        kelurahan: body.kelurahan || null,
+        kecamatan: body.kecamatan || null,
+        provinsi: body.provinsi || null,
+        kota: body.kota || null,
+        kode_pos: body.kode_pos || null,
+        nomor_handphone: body.nomor_handphone || null,
+        nomor_telepon: body.nomor_telepon || null,
         email: body.email || null,
+        sosial_media: body.sosial_media || null,
+        e_ktp: body.e_ktp || null,
+        kartu_keluarga: body.kartu_keluarga || null,
+        npwp: body.npwp || null,
+        tempat_lahir: body.tempat_lahir || null,
+        tanggal_lahir: body.tanggal_lahir || null,
+        jenis_kelamin: body.jenis_kelamin || null,
+        agama: body.agama || null,
         golongan_darah: body.golongan_darah || null,
-        no_kk: body.no_kk || null,
-        surat_nikah: body.surat_nikah || null,
+        besaran_iuran: body.besaran_iuran || null,
+        form_kesediaan_iuran: body.form_kesediaan_iuran || null,
+        nama_bank: body.nama_bank || null,
+        norek_bank: body.norek_bank || null,
+        kategori_bantuan: body.kategori_bantuan || null,
+        tanggal_terima_bantuan: body.tanggal_terima_bantuan || null,
+        gambar_kondisi_tempat_tinggal: body.gambar_kondisi_tempat_tinggal || null,
+        alasan_mutasi: body.alasan_mutasi || null,
+        tanggal_mutasi: body.tanggal_mutasi || null,
+        cabang_pengajuan_mutasi: body.cabang_pengajuan_mutasi || null,
+        pusat_pengesahan_mutasi: body.pusat_pengesahan_mutasi || null,
+        status_bpjs: body.status_bpjs || null,
+        bpjs_kelas: body.bpjs_kelas || null,
+        bpjs_insentif: body.bpjs_insentif || null,
+        kategori_datul: body.kategori_datul || null,
+        media_datul: body.media_datul || null,
       }])
       .select()
       .single();

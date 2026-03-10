@@ -45,15 +45,15 @@ export function DeleteConfirmDialog({
             <div className="bg-muted/50 rounded-lg p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Nama</span>
-                <span className="font-medium">{member.nama}</span>
+                <span className="font-medium">{member.nama_anggota}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">NIKAP</span>
-                <span className="font-mono text-sm">{member.nikap}</span>
+                <span className="text-sm text-muted-foreground">NIK</span>
+                <span className="font-mono text-sm">{member.nik}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Cabang</span>
-                <span className="text-sm">{member.cabang_domisili}</span>
+                <span className="text-sm">{member.nama_cabang}</span>
               </div>
             </div>
           )}

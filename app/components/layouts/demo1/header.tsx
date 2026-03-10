@@ -143,7 +143,7 @@ export function Header() {
                   }
                 />
               )} */}
-              <NotificationsSheet
+              {/* <NotificationsSheet
                 trigger={
                   <Button
                     variant="ghost"
@@ -166,7 +166,7 @@ export function Header() {
                     <MessageCircleMore className="size-4.5!" />
                   </Button>
                 }
-              />
+              /> */}
               {/* <AppsDropdownMenu
                 trigger={
                   <Button

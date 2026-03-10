@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, FileText, MapPin, Loader2, Pencil, Plus } from 'lucide-react';
+import { User, FileText, MapPin, Loader2, Pencil, Plus, Building } from 'lucide-react';
 import {
   Dialog,
   DialogBody,
@@ -31,31 +31,58 @@ interface MemberFormModalProps {
 }
 
 const defaultFormData: CreateAnggotaInput = {
-  nikap: '',
-  nik_ktp: '',
-  nama: '',
-  status_anggota: 'Aktif',
-  jenis_anggota: 'Pensiunan',
-  status_iuran: 'Lunas',
-  status_kesehatan: 'Sehat',
-  tempat_lahir: '',
-  tanggal_lahir: '',
-  jenis_kelamin: 'Laki-laki',
-  agama: 'Islam',
-  golongan_darah: '',
-  status_perkawinan: 'Menikah',
-  no_kk: '',
-  surat_nikah: '',
-  sk_pensiun: '',
-  nomor_kontak: '',
+  nik: '',
+  nama_anggota: '',
+  kategori_anggota: 'biasa',
+  status_anggota: 'pegawai',
+  status_mps: 'non_mps',
+  status_iuran: 'belum_ttd',
+  nama_cabang: '',
+  posisi_kepengurusan: 'Anggota',
+  status_kepesertaan: '',
+  cabang_kelas: '',
+  cabang_area_regional: '',
+  cabang_area_witel: '',
+  pasutri: '',
+  status_perkawinan: 'kawin',
+  sk_pensiun: 'pensiun',
+  nomor_sk_pensiun: '',
   alamat: '',
   rt: '',
   rw: '',
   kelurahan: '',
   kecamatan: '',
   kota: '',
+  provinsi: '',
   kode_pos: '',
-  cabang_domisili: '',
+  nomor_handphone: '',
+  nomor_telepon: '',
+  email: '',
+  sosial_media: '',
+  e_ktp: '',
+  kartu_keluarga: '',
+  npwp: '',
+  tempat_lahir: '',
+  tanggal_lahir: '',
+  jenis_kelamin: 'laki_laki',
+  agama: 'islam',
+  golongan_darah: 'A',
+  besaran_iuran: 0,
+  form_kesediaan_iuran: false,
+  nama_bank: '',
+  norek_bank: '',
+  kategori_bantuan: '',
+  tanggal_terima_bantuan: '',
+  gambar_kondisi_tempat_tinggal: '',
+  alasan_mutasi: '',
+  tanggal_mutasi: '',
+  cabang_pengajuan_mutasi: '',
+  pusat_pengesahan_mutasi: '',
+  status_bpjs: false,
+  bpjs_kelas: '',
+  bpjs_insentif: false,
+  kategori_datul: '',
+  media_datul: '',
 };
 
 export function MemberFormModal({
@@ -72,32 +99,58 @@ export function MemberFormModal({
   useEffect(() => {
     if (mode === 'edit' && member) {
       setFormData({
-        nikap: member.nikap,
-        nik_ktp: member.nik_ktp,
-        nama: member.nama,
+        nik: member.nik,
+        nama_anggota: member.nama_anggota,
+        kategori_anggota: member.kategori_anggota,
         status_anggota: member.status_anggota,
-        jenis_anggota: member.jenis_anggota,
+        status_mps: member.status_mps,
         status_iuran: member.status_iuran,
-        status_kesehatan: member.status_kesehatan,
-        tempat_lahir: member.tempat_lahir,
-        tanggal_lahir: member.tanggal_lahir,
-        jenis_kelamin: member.jenis_kelamin,
-        agama: member.agama,
-        golongan_darah: member.golongan_darah || '',
-        status_perkawinan: member.status_perkawinan,
-        no_kk: member.no_kk || '',
-        surat_nikah: member.surat_nikah || '',
-        sk_pensiun: member.sk_pensiun,
-        nomor_kontak: member.nomor_kontak,
+        nama_cabang: member.nama_cabang,
+        posisi_kepengurusan: member.posisi_kepengurusan,
+        status_kepesertaan: member.status_kepesertaan || '',
+        cabang_kelas: member.cabang_kelas || '',
+        cabang_area_regional: member.cabang_area_regional || '',
+        cabang_area_witel: member.cabang_area_witel || '',
+        pasutri: member.pasutri || '',
+        status_perkawinan: member.status_perkawinan || 'kawin',
+        sk_pensiun: member.sk_pensiun || 'pensiun',
+        nomor_sk_pensiun: member.nomor_sk_pensiun || '',
+        alamat: member.alamat || '',
+        rt: member.rt || '',
+        rw: member.rw || '',
+        kelurahan: member.kelurahan || '',
+        kecamatan: member.kecamatan || '',
+        provinsi: member.provinsi || '',
+        kota: member.kota || '',
+        kode_pos: member.kode_pos || '',
+        nomor_handphone: member.nomor_handphone || '',
+        nomor_telepon: member.nomor_telepon || '',
         email: member.email || '',
-        alamat: member.alamat,
-        rt: member.rt,
-        rw: member.rw,
-        kelurahan: member.kelurahan,
-        kecamatan: member.kecamatan,
-        kota: member.kota,
-        kode_pos: member.kode_pos,
-        cabang_domisili: member.cabang_domisili,
+        sosial_media: member.sosial_media || '',
+        e_ktp: member.e_ktp || '',
+        kartu_keluarga: member.kartu_keluarga || '',
+        npwp: member.npwp || '',
+        tempat_lahir: member.tempat_lahir || '',
+        tanggal_lahir: member.tanggal_lahir || '',
+        jenis_kelamin: member.jenis_kelamin || 'laki_laki',
+        agama: member.agama || 'islam',
+        golongan_darah: member.golongan_darah || 'A',
+        besaran_iuran: member.besaran_iuran || 0,
+        form_kesediaan_iuran: member.form_kesediaan_iuran || false,
+        nama_bank: member.nama_bank || '',
+        norek_bank: member.norek_bank || '',
+        kategori_bantuan: member.kategori_bantuan || '',
+        tanggal_terima_bantuan: member.tanggal_terima_bantuan || '',
+        gambar_kondisi_tempat_tinggal: member.gambar_kondisi_tempat_tinggal || '',
+        alasan_mutasi: member.alasan_mutasi || '',
+        tanggal_mutasi: member.tanggal_mutasi || '',
+        cabang_pengajuan_mutasi: member.cabang_pengajuan_mutasi || '',
+        pusat_pengesahan_mutasi: member.pusat_pengesahan_mutasi || '',
+        status_bpjs: member.status_bpjs || false,
+        bpjs_kelas: member.bpjs_kelas || '',
+        bpjs_insentif: member.bpjs_insentif || false,
+        kategori_datul: member.kategori_datul || '',
+        media_datul: member.media_datul || '',
       });
     } else {
       setFormData(defaultFormData);
@@ -124,40 +177,62 @@ export function MemberFormModal({
 
         <form onSubmit={handleSubmit}>
           <DialogBody className="space-y-6">
-            {/* Status Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Status & Kategori */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Kategori Anggota *</label>
+                <Select
+                  value={formData.kategori_anggota}
+                  onValueChange={(value: any) => setFormData({ ...formData, kategori_anggota: value })}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih kategori" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="biasa">Biasa</SelectItem>
+                    <SelectItem value="luar_biasa">Luar Biasa</SelectItem>
+                    <SelectItem value="kehormatan">Kehormatan</SelectItem>
+                    <SelectItem value="bukan_anggota">Bukan Anggota</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Status Anggota *</label>
                 <Select
                   value={formData.status_anggota}
-                  onValueChange={(value) => setFormData({ ...formData, status_anggota: value })}
+                  onValueChange={(value: any) => setFormData({ ...formData, status_anggota: value })}
                   required
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Aktif">Aktif</SelectItem>
-                    <SelectItem value="Non-Aktif">Non-Aktif</SelectItem>
-                    <SelectItem value="Meninggal">Meninggal</SelectItem>
-                    <SelectItem value="Pindah">Pindah</SelectItem>
+                    <SelectItem value="pegawai">Pegawai</SelectItem>
+                    <SelectItem value="istri_1">Istri 1</SelectItem>
+                    <SelectItem value="suami">Suami</SelectItem>
+                    <SelectItem value="istri_2">Istri 2</SelectItem>
+                    <SelectItem value="istri_3">Istri 3</SelectItem>
+                    <SelectItem value="anak_1">Anak 1</SelectItem>
+                    <SelectItem value="anak_2">Anak 2</SelectItem>
+                    <SelectItem value="anak_3">Anak 3</SelectItem>
+                    <SelectItem value="meninggal">Meninggal</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Jenis Anggota *</label>
+                <label className="text-sm font-medium">Status MPS *</label>
                 <Select
-                  value={formData.jenis_anggota}
-                  onValueChange={(value) => setFormData({ ...formData, jenis_anggota: value })}
+                  value={formData.status_mps}
+                  onValueChange={(value: any) => setFormData({ ...formData, status_mps: value })}
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih jenis" />
+                    <SelectValue placeholder="Pilih MPS" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Pensiunan">Pensiunan</SelectItem>
-                    <SelectItem value="Janda/Duda">Janda/Duda</SelectItem>
-                    <SelectItem value="Tanggungan">Tanggungan</SelectItem>
+                    <SelectItem value="mps">MPS</SelectItem>
+                    <SelectItem value="non_mps">Non-MPS</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -165,16 +240,16 @@ export function MemberFormModal({
                 <label className="text-sm font-medium">Status Iuran *</label>
                 <Select
                   value={formData.status_iuran}
-                  onValueChange={(value) => setFormData({ ...formData, status_iuran: value })}
+                  onValueChange={(value: any) => setFormData({ ...formData, status_iuran: value })}
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih status iuran" />
+                    <SelectValue placeholder="Pilih iuran" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Lunas">Lunas</SelectItem>
-                    <SelectItem value="Belum Lunas">Belum Lunas</SelectItem>
-                    <SelectItem value="Tidak Ada">Tidak Ada</SelectItem>
+                    <SelectItem value="sudah_ttd">Sudah TTD</SelectItem>
+                    <SelectItem value="belum_ttd">Belum TTD</SelectItem>
+                    <SelectItem value="tidak_iuran">Tidak Iuran</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -188,83 +263,70 @@ export function MemberFormModal({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">NIKAP *</label>
-                  <Input
-                    placeholder="Contoh: 19801234"
-                    value={formData.nikap}
-                    onChange={(e) => setFormData({ ...formData, nikap: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">NIK KTP *</label>
+                  <label className="text-sm font-medium">NIK *</label>
                   <Input
                     placeholder="Contoh: 3201123456789012"
-                    value={formData.nik_ktp}
-                    onChange={(e) => setFormData({ ...formData, nik_ktp: e.target.value })}
+                    value={formData.nik}
+                    onChange={(e) => setFormData({ ...formData, nik: e.target.value })}
                     required
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="md:col-span-2 space-y-2">
                   <label className="text-sm font-medium">Nama Lengkap *</label>
                   <Input
                     placeholder="Nama lengkap anggota"
-                    value={formData.nama}
-                    onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
+                    value={formData.nama_anggota}
+                    onChange={(e) => setFormData({ ...formData, nama_anggota: e.target.value })}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Tempat Lahir *</label>
+                  <label className="text-sm font-medium">Tempat Lahir</label>
                   <Input
                     placeholder="Kota kelahiran"
                     value={formData.tempat_lahir}
                     onChange={(e) => setFormData({ ...formData, tempat_lahir: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Tanggal Lahir *</label>
+                  <label className="text-sm font-medium">Tanggal Lahir</label>
                   <Input
                     type="date"
                     value={formData.tanggal_lahir}
                     onChange={(e) => setFormData({ ...formData, tanggal_lahir: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Jenis Kelamin *</label>
+                  <label className="text-sm font-medium">Jenis Kelamin</label>
                   <Select
                     value={formData.jenis_kelamin}
-                    onValueChange={(value) => setFormData({ ...formData, jenis_kelamin: value })}
-                    required
+                    onValueChange={(value: any) => setFormData({ ...formData, jenis_kelamin: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih jenis kelamin" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Laki-laki">Laki-laki</SelectItem>
-                      <SelectItem value="Perempuan">Perempuan</SelectItem>
+                      <SelectItem value="laki_laki">Laki-laki</SelectItem>
+                      <SelectItem value="perempuan">Perempuan</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Agama *</label>
+                  <label className="text-sm font-medium">Agama</label>
                   <Select
                     value={formData.agama}
-                    onValueChange={(value) => setFormData({ ...formData, agama: value })}
-                    required
+                    onValueChange={(value: any) => setFormData({ ...formData, agama: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih agama" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Islam">Islam</SelectItem>
-                      <SelectItem value="Kristen">Kristen</SelectItem>
-                      <SelectItem value="Katolik">Katolik</SelectItem>
-                      <SelectItem value="Hindu">Hindu</SelectItem>
-                      <SelectItem value="Buddha">Buddha</SelectItem>
-                      <SelectItem value="Konghucu">Konghucu</SelectItem>
+                      <SelectItem value="islam">Islam</SelectItem>
+                      <SelectItem value="kristen">Kristen</SelectItem>
+                      <SelectItem value="katolik">Katolik</SelectItem>
+                      <SelectItem value="hindu">Hindu</SelectItem>
+                      <SelectItem value="buddha">Buddha</SelectItem>
+                      <SelectItem value="konghucu">Konghucu</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -272,7 +334,7 @@ export function MemberFormModal({
                   <label className="text-sm font-medium">Golongan Darah</label>
                   <Select
                     value={formData.golongan_darah}
-                    onValueChange={(value) => setFormData({ ...formData, golongan_darah: value })}
+                    onValueChange={(value: any) => setFormData({ ...formData, golongan_darah: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih golongan darah" />
@@ -282,100 +344,152 @@ export function MemberFormModal({
                       <SelectItem value="B">B</SelectItem>
                       <SelectItem value="AB">AB</SelectItem>
                       <SelectItem value="O">O</SelectItem>
-                      <SelectItem value="-">Tidak Tahu</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Status Perkawinan *</label>
+                  <label className="text-sm font-medium">Status Perkawinan</label>
                   <Select
                     value={formData.status_perkawinan}
-                    onValueChange={(value) => setFormData({ ...formData, status_perkawinan: value })}
-                    required
+                    onValueChange={(value: any) => setFormData({ ...formData, status_perkawinan: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Menikah">Menikah</SelectItem>
-                      <SelectItem value="Duda">Duda</SelectItem>
-                      <SelectItem value="Janda">Janda</SelectItem>
-                      <SelectItem value="Belum Menikah">Belum Menikah</SelectItem>
+                      <SelectItem value="belum_kawin">Belum Kawin</SelectItem>
+                      <SelectItem value="kawin">Kawin</SelectItem>
+                      <SelectItem value="cerai_hidup">Cerai Hidup</SelectItem>
+                      <SelectItem value="cerai_mati">Cerai Mati</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
             </div>
 
-            {/* Informasi Kesehatan & Keanggotaan */}
+            {/* Informasi Organisasi */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Building className="h-5 w-5" />
+                Informasi Organisasi
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Nama Cabang *</label>
+                  <Input
+                    placeholder="Nama cabang"
+                    value={formData.nama_cabang}
+                    onChange={(e) => setFormData({ ...formData, nama_cabang: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Posisi Kepengurusan *</label>
+                  <Input
+                    placeholder="Posisi kepengurusan"
+                    value={formData.posisi_kepengurusan}
+                    onChange={(e) => setFormData({ ...formData, posisi_kepengurusan: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">SK Pensiun</label>
+                  <Select
+                    value={formData.sk_pensiun}
+                    onValueChange={(value: any) => setFormData({ ...formData, sk_pensiun: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih SK" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pensiun">Pensiun</SelectItem>
+                      <SelectItem value="janda">Janda</SelectItem>
+                      <SelectItem value="duda">Duda</SelectItem>
+                      <SelectItem value="anak">Anak</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Nomor SK Pensiun</label>
+                  <Input
+                    placeholder="Nomor SK pensiun"
+                    value={formData.nomor_sk_pensiun}
+                    onChange={(e) => setFormData({ ...formData, nomor_sk_pensiun: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Status Kepesertaan</label>
+                  <Input
+                    placeholder="Status kepesertaan"
+                    value={formData.status_kepesertaan}
+                    onChange={(e) => setFormData({ ...formData, status_kepesertaan: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Pasutri</label>
+                  <Input
+                    placeholder="Pasutri"
+                    value={formData.pasutri}
+                    onChange={(e) => setFormData({ ...formData, pasutri: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Cabang Kelas</label>
+                  <Input
+                    placeholder="Kelas cabang"
+                    value={formData.cabang_kelas}
+                    onChange={(e) => setFormData({ ...formData, cabang_kelas: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Area Regional</label>
+                  <Input
+                    placeholder="Area regional"
+                    value={formData.cabang_area_regional}
+                    onChange={(e) => setFormData({ ...formData, cabang_area_regional: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Area Witel</label>
+                  <Input
+                    placeholder="Area witel"
+                    value={formData.cabang_area_witel}
+                    onChange={(e) => setFormData({ ...formData, cabang_area_witel: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Dokumen */}
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Informasi Kesehatan & Keanggotaan
+                Dokumen
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Status Kesehatan *</label>
-                  <Select
-                    value={formData.status_kesehatan}
-                    onValueChange={(value) => setFormData({ ...formData, status_kesehatan: value })}
-                    required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih status kesehatan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Sehat">Sehat</SelectItem>
-                      <SelectItem value="BPJS">BPJS</SelectItem>
-                      <SelectItem value="Asuransi Swasta">Asuransi Swasta</SelectItem>
-                      <SelectItem value="Tidak Ada">Tidak Ada</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <label className="text-sm font-medium">E-KTP</label>
+                  <Input
+                    placeholder="Nomor E-KTP"
+                    value={formData.e_ktp}
+                    onChange={(e) => setFormData({ ...formData, e_ktp: e.target.value })}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">No. Kartu Keluarga *</label>
+                  <label className="text-sm font-medium">Kartu Keluarga</label>
                   <Input
                     placeholder="Nomor KK"
-                    value={formData.no_kk}
-                    onChange={(e) => setFormData({ ...formData, no_kk: e.target.value })}
-                    required
+                    value={formData.kartu_keluarga}
+                    onChange={(e) => setFormData({ ...formData, kartu_keluarga: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Surat Nikah</label>
+                  <label className="text-sm font-medium">NPWP</label>
                   <Input
-                    placeholder="Nomor surat nikah (jika ada)"
-                    value={formData.surat_nikah}
-                    onChange={(e) => setFormData({ ...formData, surat_nikah: e.target.value })}
+                    placeholder="Nomor NPWP"
+                    value={formData.npwp}
+                    onChange={(e) => setFormData({ ...formData, npwp: e.target.value })}
                   />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">SK Pensiun *</label>
-                  <Input
-                    placeholder="Nomor SK pensiun"
-                    value={formData.sk_pensiun}
-                    onChange={(e) => setFormData({ ...formData, sk_pensiun: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Cabang Domisili *</label>
-                  <Select
-                    value={formData.cabang_domisili}
-                    onValueChange={(value) => setFormData({ ...formData, cabang_domisili: value })}
-                    required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih cabang" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Cabang Jakarta">Cabang Jakarta</SelectItem>
-                      <SelectItem value="Cabang Bandung">Cabang Bandung</SelectItem>
-                      <SelectItem value="Cabang Surabaya">Cabang Surabaya</SelectItem>
-                      <SelectItem value="Cabang Medan">Cabang Medan</SelectItem>
-                      <SelectItem value="Cabang Makassar">Cabang Makassar</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
               </div>
             </div>
@@ -388,12 +502,19 @@ export function MemberFormModal({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Nomor Kontak *</label>
+                  <label className="text-sm font-medium">Nomor Handphone</label>
                   <Input
                     placeholder="08xxxxxxxxxx"
-                    value={formData.nomor_kontak}
-                    onChange={(e) => setFormData({ ...formData, nomor_kontak: e.target.value })}
-                    required
+                    value={formData.nomor_handphone}
+                    onChange={(e) => setFormData({ ...formData, nomor_handphone: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Nomor Telepon</label>
+                  <Input
+                    placeholder="021xxxxxxxx"
+                    value={formData.nomor_telepon}
+                    onChange={(e) => setFormData({ ...formData, nomor_telepon: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -405,67 +526,267 @@ export function MemberFormModal({
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Sosial Media</label>
+                  <Input
+                    placeholder="Username sosial media"
+                    value={formData.sosial_media}
+                    onChange={(e) => setFormData({ ...formData, sosial_media: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Kategori Datul</label>
+                  <Input
+                    placeholder="Kategori datul"
+                    value={formData.kategori_datul}
+                    onChange={(e) => setFormData({ ...formData, kategori_datul: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Media Datul</label>
+                  <Input
+                    placeholder="Media datul"
+                    value={formData.media_datul}
+                    onChange={(e) => setFormData({ ...formData, media_datul: e.target.value })}
+                  />
+                </div>
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-medium">Alamat *</label>
                   <Input
-                    placeholder="Jalan, RT, RW"
+                    placeholder="Nama jalan"
                     value={formData.alamat}
                     onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">RT *</label>
+                  <label className="text-sm font-medium">RT</label>
                   <Input
                     placeholder="001"
                     value={formData.rt}
                     onChange={(e) => setFormData({ ...formData, rt: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">RW *</label>
+                  <label className="text-sm font-medium">RW</label>
                   <Input
                     placeholder="001"
                     value={formData.rw}
                     onChange={(e) => setFormData({ ...formData, rw: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Kelurahan *</label>
+                  <label className="text-sm font-medium">Kelurahan</label>
                   <Input
                     placeholder="Nama kelurahan"
                     value={formData.kelurahan}
                     onChange={(e) => setFormData({ ...formData, kelurahan: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Kecamatan *</label>
+                  <label className="text-sm font-medium">Kecamatan</label>
                   <Input
                     placeholder="Nama kecamatan"
                     value={formData.kecamatan}
                     onChange={(e) => setFormData({ ...formData, kecamatan: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Kota *</label>
+                  <label className="text-sm font-medium">Kota</label>
                   <Input
                     placeholder="Nama kota"
                     value={formData.kota}
                     onChange={(e) => setFormData({ ...formData, kota: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Kode Pos *</label>
+                  <label className="text-sm font-medium">Provinsi</label>
+                  <Input
+                    placeholder="Nama provinsi"
+                    value={formData.provinsi}
+                    onChange={(e) => setFormData({ ...formData, provinsi: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Kode Pos</label>
                   <Input
                     placeholder="12345"
                     value={formData.kode_pos}
                     onChange={(e) => setFormData({ ...formData, kode_pos: e.target.value })}
-                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Data Keuangan */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Data Keuangan
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Besaran Iuran</label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={formData.besaran_iuran}
+                    onChange={(e) => setFormData({ ...formData, besaran_iuran: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Form Kesediaan Iuran</label>
+                  <Select
+                    value={formData.form_kesediaan_iuran ? 'true' : 'false'}
+                    onValueChange={(value) => setFormData({ ...formData, form_kesediaan_iuran: value === 'true' })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Ya</SelectItem>
+                      <SelectItem value="false">Tidak</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Nama Bank</label>
+                  <Input
+                    placeholder="Nama bank"
+                    value={formData.nama_bank}
+                    onChange={(e) => setFormData({ ...formData, nama_bank: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Nomor Rekening</label>
+                  <Input
+                    placeholder="Nomor rekening"
+                    value={formData.norek_bank}
+                    onChange={(e) => setFormData({ ...formData, norek_bank: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Data BPJS */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Data BPJS
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Status BPJS</label>
+                  <Select
+                    value={formData.status_bpjs ? 'true' : 'false'}
+                    onValueChange={(value) => setFormData({ ...formData, status_bpjs: value === 'true' })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Aktif</SelectItem>
+                      <SelectItem value="false">Tidak Aktif</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Kelas BPJS</label>
+                  <Input
+                    placeholder="Kelas BPJS"
+                    value={formData.bpjs_kelas}
+                    onChange={(e) => setFormData({ ...formData, bpjs_kelas: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Insentif BPJS</label>
+                  <Select
+                    value={formData.bpjs_insentif ? 'true' : 'false'}
+                    onValueChange={(value) => setFormData({ ...formData, bpjs_insentif: value === 'true' })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Ya</SelectItem>
+                      <SelectItem value="false">Tidak</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Bantuan Sosial */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Bantuan Sosial
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Kategori Bantuan</label>
+                  <Input
+                    placeholder="Kategori bantuan"
+                    value={formData.kategori_bantuan}
+                    onChange={(e) => setFormData({ ...formData, kategori_bantuan: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Terima Bantuan</label>
+                  <Input
+                    type="date"
+                    value={formData.tanggal_terima_bantuan}
+                    onChange={(e) => setFormData({ ...formData, tanggal_terima_bantuan: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">URL Gambar Kondisi Tempat Tinggal</label>
+                  <Input
+                    placeholder="URL gambar"
+                    value={formData.gambar_kondisi_tempat_tinggal}
+                    onChange={(e) => setFormData({ ...formData, gambar_kondisi_tempat_tinggal: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Data Mutasi */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Data Mutasi
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Alasan Mutasi</label>
+                  <Input
+                    placeholder="Alasan mutasi"
+                    value={formData.alasan_mutasi}
+                    onChange={(e) => setFormData({ ...formData, alasan_mutasi: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Mutasi</label>
+                  <Input
+                    type="date"
+                    value={formData.tanggal_mutasi}
+                    onChange={(e) => setFormData({ ...formData, tanggal_mutasi: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Cabang Pengajuan Mutasi</label>
+                  <Input
+                    placeholder="Cabang pengajuan"
+                    value={formData.cabang_pengajuan_mutasi}
+                    onChange={(e) => setFormData({ ...formData, cabang_pengajuan_mutasi: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Pusat Pengesahan Mutasi</label>
+                  <Input
+                    placeholder="Pusat pengesahan"
+                    value={formData.pusat_pengesahan_mutasi}
+                    onChange={(e) => setFormData({ ...formData, pusat_pengesahan_mutasi: e.target.value })}
                   />
                 </div>
               </div>

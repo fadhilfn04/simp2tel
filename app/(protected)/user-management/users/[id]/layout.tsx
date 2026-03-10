@@ -58,11 +58,11 @@ export default function UserLayout({
         icon: UserPen,
         path: `/user-management/users/${id}`,
       },
-      logs: {
-        title: 'Activity Logs',
-        icon: Activity,
-        path: `/user-management/users/${id}/logs`,
-      },
+      // logs: {
+      //   title: 'Activity Logs',
+      //   icon: Activity,
+      //   path: `/user-management/users/${id}/logs`,
+      // },
     }),
     [id],
   );
@@ -114,7 +114,7 @@ export default function UserLayout({
       <Container>
         <Toolbar>
           <ToolbarHeading>
-            <ToolbarTitle>User</ToolbarTitle>
+            <ToolbarTitle>Pengguna</ToolbarTitle>
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -122,11 +122,11 @@ export default function UserLayout({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>User Management</BreadcrumbPage>
+                  <BreadcrumbPage>Manajemen Pengguna</BreadcrumbPage>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/user/users">Users</BreadcrumbLink>
+                  <BreadcrumbLink href="/user/users">Pengguna</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -134,7 +134,7 @@ export default function UserLayout({
           <ToolbarActions>
             <Button asChild variant="outline">
               <Link href="/user-management/users">
-                <MoveLeft /> Back to users
+                <MoveLeft /> Kembali ke daftar pengguna
               </Link>
             </Button>
           </ToolbarActions>

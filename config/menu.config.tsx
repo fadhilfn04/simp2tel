@@ -307,23 +307,23 @@ export const MENU_SIDEBAR: MenuConfig = [
     ],
   },
   {
-    title: 'User Management',
+    title: 'Manajemen Pengguna',
     icon: ShieldUser,
     children: [
       {
-        title: 'Users',
+        title: 'Pengguna',
         path: '/user-management/users',
       },
       {
-        title: 'Roles',
+        title: 'Role',
         path: '/user-management/roles',
       },
       {
-        title: 'Permissions',
+        title: 'Hak Akses',
         path: '/user-management/permissions',
       },
       {
-        title: 'Account',
+        title: 'Akun',
         path: '/user-management/account',
       },
       // {

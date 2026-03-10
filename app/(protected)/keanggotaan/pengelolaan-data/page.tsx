@@ -69,9 +69,11 @@ export default function PengelolaanDataPage() {
   });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedKategori, setSelectedKategori] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  const [selectedJenis, setSelectedJenis] = useState<string>('all');
+  const [selectedMps, setSelectedMps] = useState<string>('all');
   const [selectedIuran, setSelectedIuran] = useState<string>('all');
+  const [selectedCabang, setSelectedCabang] = useState<string>('all');
 
   // Modal states
   const [selectedMember, setSelectedMember] = useState<Anggota | null>(null);
@@ -93,9 +95,11 @@ export default function PengelolaanDataPage() {
   // API hooks
   const { data: anggotaData, isLoading } = useAnggotaList({
     search: searchQuery,
+    kategori_anggota: selectedKategori,
     status_anggota: selectedStatus,
-    jenis_anggota: selectedJenis,
+    status_mps: selectedMps,
     status_iuran: selectedIuran,
+    nama_cabang: selectedCabang,
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
   });
@@ -116,31 +120,43 @@ export default function PengelolaanDataPage() {
   };
 
   const getStatusAnggotaProps = (status: Anggota['status_anggota']) => {
-    switch (status) {
-      case 'Aktif':
-        return { variant: 'success' as const, label: 'Aktif' };
-      case 'Non-Aktif':
-        return { variant: 'destructive' as const, label: 'Non-Aktif' };
-      case 'Meninggal':
-        return { variant: 'destructive' as const, label: 'Meninggal' };
-      case 'Pindah':
-        return { variant: 'warning' as const, label: 'Pindah' };
-      default:
-        return { variant: 'secondary' as const, label: status };
-    }
+    const statusMap: Record<string, { variant: 'success' | 'destructive' | 'warning' | 'secondary'; label: string }> = {
+      pegawai: { variant: 'success', label: 'Pegawai' },
+      istri_1: { variant: 'warning', label: 'Istri 1' },
+      suami: { variant: 'warning', label: 'Suami' },
+      istri_2: { variant: 'warning', label: 'Istri 2' },
+      istri_3: { variant: 'warning', label: 'Istri 3' },
+      anak_1: { variant: 'secondary', label: 'Anak 1' },
+      anak_2: { variant: 'secondary', label: 'Anak 2' },
+      anak_3: { variant: 'secondary', label: 'Anak 3' },
+      meninggal: { variant: 'destructive', label: 'Meninggal' },
+    };
+    return statusMap[status] || { variant: 'secondary', label: status };
+  };
+
+  const getKategoriAnggotaProps = (kategori: Anggota['kategori_anggota']) => {
+    const kategoriMap: Record<string, { variant: 'success' | 'destructive' | 'warning' | 'secondary'; label: string }> = {
+      biasa: { variant: 'success', label: 'Biasa' },
+      luar_biasa: { variant: 'warning', label: 'Luar Biasa' },
+      kehormatan: { variant: 'warning', label: 'Kehormatan' },
+      bukan_anggota: { variant: 'secondary', label: 'Bukan Anggota' },
+    };
+    return kategoriMap[kategori] || { variant: 'secondary', label: kategori };
+  };
+
+  const getStatusMpsProps = (status: Anggota['status_mps']) => {
+    return status === 'mps'
+      ? { variant: 'success' as const, label: 'MPS' }
+      : { variant: 'secondary' as const, label: 'Non-MPS' };
   };
 
   const getStatusIuranProps = (status: Anggota['status_iuran']) => {
-    switch (status) {
-      case 'Lunas':
-        return { variant: 'success' as const, label: 'Lunas' };
-      case 'Belum Lunas':
-        return { variant: 'warning' as const, label: 'Belum Lunas' };
-      case 'Tidak Ada':
-        return { variant: 'secondary' as const, label: 'Tidak Ada' };
-      default:
-        return { variant: 'secondary' as const, label: status };
-    }
+    const statusMap: Record<string, { variant: 'success' | 'destructive' | 'warning' | 'secondary'; label: string }> = {
+      sudah_ttd: { variant: 'success', label: 'Sudah TTD' },
+      belum_ttd: { variant: 'warning', label: 'Belum TTD' },
+      tidak_iuran: { variant: 'secondary', label: 'Tidak Iuran' },
+    };
+    return statusMap[status] || { variant: 'secondary', label: status };
   };
 
   // Event handlers
@@ -210,14 +226,27 @@ export default function PengelolaanDataPage() {
         cell: ({ row }) => row.index + 1 + pagination.pageIndex * pagination.pageSize,
       },
       {
-        accessorKey: 'nikap',
-        header: 'NIKAP',
-        cell: ({ row }) => <span className="font-mono text-xs sm:text-sm">{row.original.nikap}</span>,
+        accessorKey: 'nik',
+        header: 'NIK',
+        cell: ({ row }) => <span className="font-mono text-xs sm:text-sm">{row.original.nik}</span>,
       },
       {
-        accessorKey: 'nama',
+        accessorKey: 'nama_anggota',
         header: 'NAMA',
-        cell: ({ row }) => <div className="font-medium text-xs sm:text-sm">{row.original.nama}</div>,
+        cell: ({ row }) => <div className="font-medium text-xs sm:text-sm">{row.original.nama_anggota}</div>,
+      },
+      {
+        accessorKey: 'kategori_anggota',
+        header: 'KATEGORI',
+        cell: ({ row }) => {
+          const props = getKategoriAnggotaProps(row.original.kategori_anggota);
+          return (
+            <Badge variant={props.variant} appearance="ghost" className="text-xs">
+              <BadgeDot />
+              {props.label}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: 'status_anggota',
@@ -233,9 +262,22 @@ export default function PengelolaanDataPage() {
         },
       },
       {
-        accessorKey: 'jenis_anggota',
-        header: 'JENIS',
-        cell: ({ row }) => <span className="text-xs sm:text-sm">{row.original.jenis_anggota}</span>,
+        accessorKey: 'status_mps',
+        header: 'MPS',
+        cell: ({ row }) => {
+          const props = getStatusMpsProps(row.original.status_mps);
+          return (
+            <Badge variant={props.variant} appearance="ghost" className="text-xs">
+              <BadgeDot />
+              {props.label}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: 'nama_cabang',
+        header: 'CABANG',
+        cell: ({ row }) => <span className="text-xs sm:text-sm">{row.original.nama_cabang}</span>,
       },
       {
         accessorKey: 'status_iuran',
@@ -251,9 +293,14 @@ export default function PengelolaanDataPage() {
         },
       },
       {
-        accessorKey: 'cabang_domisili',
-        header: 'CABANG',
-        cell: ({ row }) => <span className="text-xs sm:text-sm">{row.original.cabang_domisili}</span>,
+        accessorKey: 'posisi_kepengurusan',
+        header: 'POSISI KEPENGURUSAN',
+        cell: ({ row }) => <span className="text-xs sm:text-sm">{row.original.posisi_kepengurusan}</span>,
+      },
+      {
+        accessorKey: 'sk_pensiun',
+        header: 'SK PENSIUN',
+        cell: ({ row }) => <span className="text-xs sm:text-sm">{row.original.sk_pensiun}</span>,
       },
       {
         id: 'actions',
@@ -341,7 +388,7 @@ export default function PengelolaanDataPage() {
                 <div className="relative">
                   <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
                   <Input
-                    placeholder="Cari nama, NIKAP, atau cabang..."
+                    placeholder="Cari nama, NIK, atau cabang..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="ps-9 w-full sm:w-64"
@@ -361,38 +408,61 @@ export default function PengelolaanDataPage() {
                 {/* Filters */}
                 <Select
                   onValueChange={(value) => {
+                    setSelectedKategori(value);
+                    setPagination({ ...pagination, pageIndex: 0 });
+                  }}
+                  value={selectedKategori}
+                >
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder="Kategori" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Kategori</SelectItem>
+                    <SelectItem value="biasa">Biasa</SelectItem>
+                    <SelectItem value="luar_biasa">Luar Biasa</SelectItem>
+                    <SelectItem value="kehormatan">Kehormatan</SelectItem>
+                    <SelectItem value="bukan_anggota">Bukan Anggota</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  onValueChange={(value) => {
                     setSelectedStatus(value);
                     setPagination({ ...pagination, pageIndex: 0 });
                   }}
                   value={selectedStatus}
                 >
                   <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Status Anggota" />
+                    <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Semua Status</SelectItem>
-                    <SelectItem value="Aktif">Aktif</SelectItem>
-                    <SelectItem value="Non-Aktif">Non-Aktif</SelectItem>
-                    <SelectItem value="Meninggal">Meninggal</SelectItem>
-                    <SelectItem value="Pindah">Pindah</SelectItem>
+                    <SelectItem value="pegawai">Pegawai</SelectItem>
+                    <SelectItem value="istri_1">Istri 1</SelectItem>
+                    <SelectItem value="suami">Suami</SelectItem>
+                    <SelectItem value="istri_2">Istri 2</SelectItem>
+                    <SelectItem value="istri_3">Istri 3</SelectItem>
+                    <SelectItem value="anak_1">Anak 1</SelectItem>
+                    <SelectItem value="anak_2">Anak 2</SelectItem>
+                    <SelectItem value="anak_3">Anak 3</SelectItem>
+                    <SelectItem value="meninggal">Meninggal</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Select
                   onValueChange={(value) => {
-                    setSelectedJenis(value);
+                    setSelectedMps(value);
                     setPagination({ ...pagination, pageIndex: 0 });
                   }}
-                  value={selectedJenis}
+                  value={selectedMps}
                 >
                   <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Jenis Anggota" />
+                    <SelectValue placeholder="Status MPS" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Semua Jenis</SelectItem>
-                    <SelectItem value="Pensiunan">Pensiunan</SelectItem>
-                    <SelectItem value="Janda/Duda">Janda/Duda</SelectItem>
-                    <SelectItem value="Tanggungan">Tanggungan</SelectItem>
+                    <SelectItem value="all">Semua MPS</SelectItem>
+                    <SelectItem value="mps">MPS</SelectItem>
+                    <SelectItem value="non_mps">Non-MPS</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -408,9 +478,9 @@ export default function PengelolaanDataPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Semua Iuran</SelectItem>
-                    <SelectItem value="Lunas">Lunas</SelectItem>
-                    <SelectItem value="Belum Lunas">Belum Lunas</SelectItem>
-                    <SelectItem value="Tidak Ada">Tidak Ada</SelectItem>
+                    <SelectItem value="sudah_ttd">Sudah TTD</SelectItem>
+                    <SelectItem value="belum_ttd">Belum TTD</SelectItem>
+                    <SelectItem value="tidak_iuran">Tidak Iuran</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

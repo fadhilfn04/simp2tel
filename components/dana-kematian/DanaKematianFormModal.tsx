@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, FileText, Calendar, MapPin, Phone, Loader2, Plus, Pencil } from 'lucide-react';
+import { User, FileText, Calendar, MapPin, Phone, Loader2, Plus, Pencil, Building } from 'lucide-react';
 import {
   Dialog,
   DialogBody,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -19,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DanaKematian, CreateDanaKematianInput } from '@/lib/supabase';
+import { DanaKematian, CreateDanaKematianInput, Anggota } from '@/lib/supabase';
+import { FileUpload } from '@/components/ui/FileUpload';
 
 interface DanaKematianFormModalProps {
   open: boolean;
@@ -28,31 +30,37 @@ interface DanaKematianFormModalProps {
   claim?: DanaKematian | null;
   mode: 'create' | 'edit';
   isPending: boolean;
-  members: DanaKematian[];
+  members: Anggota[];
 }
 
 const defaultFormData: CreateDanaKematianInput = {
-  anggota_id: '',
-  nama_meninggal: '',
-  nik_ktp_meninggal: '',
-  nikap_meninggal: '',
+  nama_anggota: '',
+  status_anggota: 'pegawai',
+  status_mps: 'non_mps',
   tanggal_meninggal: '',
-  tempat_meninggal: '',
   penyebab_meninggal: '',
-  no_surat_kematian: '',
-  tanggal_surat_kematian: '',
-  nama_ahli_waris: '',
-  hubungan_ahli_waris: '',
-  nik_ktp_ahli_waris: '',
-  alamat_ahli_waris: '',
-  nomor_kontak_ahli_waris: '',
-  jumlah_uang_duka: 0,
-  mata_uang: 'IDR',
-  status_pengajuan: 'Pending',
-  catatan: '',
-  metode_pembayaran: 'Transfer',
-  no_rekening: '',
-  nama_bank: '',
+  tanggal_lapor_keluarga: '',
+  cabang_asal_melapor: '',
+  cabang_nama_pelapor: '',
+  cabang_nik_pelapor: '',
+  cabang_tanggal_awal_terima_berkas: '',
+  cabang_tanggal_kirim_ke_pusat: '',
+  pusat_tanggal_awal_terima: '',
+  pusat_tanggal_validasi: '',
+  pusat_tanggal_selesai: '',
+  besaran_dana_kematian: 0,
+  cabang_tanggal_serah_ke_ahli_waris: '',
+  cabang_tanggal_lapor_ke_pusat: '',
+  ahli_waris_nama: '',
+  status_ahli_waris: 'anak',
+  file_sk_pensiun: '',
+  file_surat_kematian: '',
+  file_surat_pernyataan_ahli_waris: '',
+  file_kartu_keluarga: '',
+  file_e_ktp: '',
+  file_surat_nikah: '',
+  status_proses: 'dilaporkan',
+  keterangan: '',
 };
 
 export function DanaKematianFormModal({
@@ -70,27 +78,34 @@ export function DanaKematianFormModal({
   useEffect(() => {
     if (mode === 'edit' && claim) {
       setFormData({
-        anggota_id: claim.anggota_id,
-        nama_meninggal: claim.nama_meninggal,
-        nik_ktp_meninggal: claim.nik_ktp_meninggal,
-        nikap_meninggal: claim.nikap_meninggal,
+        anggota_id: claim.anggota_id || undefined,
+        nama_anggota: claim.nama_anggota,
+        status_anggota: claim.status_anggota,
+        status_mps: claim.status_mps,
         tanggal_meninggal: claim.tanggal_meninggal,
-        tempat_meninggal: claim.tempat_meninggal,
         penyebab_meninggal: claim.penyebab_meninggal || '',
-        no_surat_kematian: claim.no_surat_kematian || '',
-        tanggal_surat_kematian: claim.tanggal_surat_kematian || '',
-        nama_ahli_waris: claim.nama_ahli_waris,
-        hubungan_ahli_waris: claim.hubungan_ahli_waris,
-        nik_ktp_ahli_waris: claim.nik_ktp_ahli_waris,
-        alamat_ahli_waris: claim.alamat_ahli_waris,
-        nomor_kontak_ahli_waris: claim.nomor_kontak_ahli_waris,
-        jumlah_uang_duka: claim.jumlah_uang_duka,
-        mata_uang: claim.mata_uang,
-        status_pengajuan: claim.status_pengajuan,
-        catatan: claim.catatan || '',
-        metode_pembayaran: claim.metode_pembayaran || 'Transfer',
-        no_rekening: claim.no_rekening || '',
-        nama_bank: claim.nama_bank || '',
+        tanggal_lapor_keluarga: claim.tanggal_lapor_keluarga || '',
+        cabang_asal_melapor: claim.cabang_asal_melapor,
+        cabang_nama_pelapor: claim.cabang_nama_pelapor || '',
+        cabang_nik_pelapor: claim.cabang_nik_pelapor || '',
+        cabang_tanggal_awal_terima_berkas: claim.cabang_tanggal_awal_terima_berkas || '',
+        cabang_tanggal_kirim_ke_pusat: claim.cabang_tanggal_kirim_ke_pusat || '',
+        pusat_tanggal_awal_terima: claim.pusat_tanggal_awal_terima || '',
+        pusat_tanggal_validasi: claim.pusat_tanggal_validasi || '',
+        pusat_tanggal_selesai: claim.pusat_tanggal_selesai || '',
+        besaran_dana_kematian: claim.besaran_dana_kematian,
+        cabang_tanggal_serah_ke_ahli_waris: claim.cabang_tanggal_serah_ke_ahli_waris || '',
+        cabang_tanggal_lapor_ke_pusat: claim.cabang_tanggal_lapor_ke_pusat || '',
+        ahli_waris_nama: claim.ahli_waris_nama,
+        status_ahli_waris: claim.status_ahli_waris,
+        file_sk_pensiun: claim.file_sk_pensiun || '',
+        file_surat_kematian: claim.file_surat_kematian || '',
+        file_surat_pernyataan_ahli_waris: claim.file_surat_pernyataan_ahli_waris || '',
+        file_kartu_keluarga: claim.file_kartu_keluarga || '',
+        file_e_ktp: claim.file_e_ktp || '',
+        file_surat_nikah: claim.file_surat_nikah || '',
+        status_proses: claim.status_proses,
+        keterangan: claim.keterangan || '',
       });
     } else {
       setFormData(defaultFormData);
@@ -108,9 +123,9 @@ export function DanaKematianFormModal({
       setFormData({
         ...formData,
         anggota_id: memberId,
-        nama_meninggal: member.nama,
-        nik_ktp_meninggal: member.nik_ktp,
-        nikap_meninggal: member.nikap,
+        nama_anggota: member.nama_anggota,
+        status_anggota: member.status_anggota,
+        status_mps: member.status_mps,
       });
     }
   };
@@ -130,11 +145,11 @@ export function DanaKematianFormModal({
 
         <form onSubmit={handleSubmit}>
           <DialogBody className="space-y-6">
-            {/* Data Meninggal Section */}
+            {/* Data Anggota Section */}
             <div>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <User className="h-5 w-5" />
-                Data Meninggal
+                Data Anggota
               </h3>
 
               {mode === 'create' && (
@@ -152,7 +167,7 @@ export function DanaKematianFormModal({
                       <SelectContent>
                         {members.map((member) => (
                           <SelectItem key={member.id} value={member.id}>
-                            {member.nama} - {member.nikap}
+                            {member.nama_anggota} - {member.nik}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -163,47 +178,69 @@ export function DanaKematianFormModal({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Nama Meninggal *</label>
+                  <label className="text-sm font-medium">Nama Anggota *</label>
                   <Input
-                    placeholder="Nama lengkap yang meninggal"
-                    value={formData.nama_meninggal}
-                    onChange={(e) => setFormData({ ...formData, nama_meninggal: e.target.value })}
+                    placeholder="Nama lengkap anggota"
+                    value={formData.nama_anggota}
+                    onChange={(e) => setFormData({ ...formData, nama_anggota: e.target.value })}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">NIK KTP *</label>
-                  <Input
-                    placeholder="NIK KTP yang meninggal"
-                    value={formData.nik_ktp_meninggal}
-                    onChange={(e) => setFormData({ ...formData, nik_ktp_meninggal: e.target.value })}
+                  <label className="text-sm font-medium">Status Anggota *</label>
+                  <Select
+                    value={formData.status_anggota}
+                    onValueChange={(value) => setFormData({ ...formData, status_anggota: value as any })}
                     required
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pegawai">Pegawai</SelectItem>
+                      <SelectItem value="istri_1">Istri 1</SelectItem>
+                      <SelectItem value="suami">Suami</SelectItem>
+                      <SelectItem value="istri_2">Istri 2</SelectItem>
+                      <SelectItem value="istri_3">Istri 3</SelectItem>
+                      <SelectItem value="anak_1">Anak 1</SelectItem>
+                      <SelectItem value="anak_2">Anak 2</SelectItem>
+                      <SelectItem value="anak_3">Anak 3</SelectItem>
+                      <SelectItem value="meninggal">Meninggal</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">NIKAP *</label>
-                  <Input
-                    placeholder="NIKAP yang meninggal"
-                    value={formData.nikap_meninggal}
-                    onChange={(e) => setFormData({ ...formData, nikap_meninggal: e.target.value })}
+                  <label className="text-sm font-medium">Status MPS *</label>
+                  <Select
+                    value={formData.status_mps}
+                    onValueChange={(value) => setFormData({ ...formData, status_mps: value as any })}
                     required
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih status MPS" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mps">MPS</SelectItem>
+                      <SelectItem value="non_mps">Non-MPS</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
+            </div>
+
+            {/* Data Kematian Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Data Kematian
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Tanggal Meninggal *</label>
                   <Input
                     type="date"
                     value={formData.tanggal_meninggal}
                     onChange={(e) => setFormData({ ...formData, tanggal_meninggal: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Tempat Meninggal *</label>
-                  <Input
-                    placeholder="Tempat meninggal"
-                    value={formData.tempat_meninggal}
-                    onChange={(e) => setFormData({ ...formData, tempat_meninggal: e.target.value })}
                     required
                   />
                 </div>
@@ -216,19 +253,142 @@ export function DanaKematianFormModal({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">No. Surat Kematian</label>
+                  <label className="text-sm font-medium">Tanggal Lapor Keluarga</label>
                   <Input
-                    placeholder="Nomor surat kematian"
-                    value={formData.no_surat_kematian}
-                    onChange={(e) => setFormData({ ...formData, no_surat_kematian: e.target.value })}
+                    type="date"
+                    value={formData.tanggal_lapor_keluarga}
+                    onChange={(e) => setFormData({ ...formData, tanggal_lapor_keluarga: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Data Pelaporan Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Data Pelaporan
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Cabang Asal Melapor *</label>
+                  <Input
+                    placeholder="Nama cabang"
+                    value={formData.cabang_asal_melapor}
+                    onChange={(e) => setFormData({ ...formData, cabang_asal_melapor: e.target.value })}
+                    required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Tanggal Surat Kematian</label>
+                  <label className="text-sm font-medium">Nama Pelapor</label>
+                  <Input
+                    placeholder="Nama pelapor"
+                    value={formData.cabang_nama_pelapor}
+                    onChange={(e) => setFormData({ ...formData, cabang_nama_pelapor: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">NIK Pelapor</label>
+                  <Input
+                    placeholder="NIK pelapor"
+                    value={formData.cabang_nik_pelapor}
+                    onChange={(e) => setFormData({ ...formData, cabang_nik_pelapor: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Proses Cabang Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Building className="h-5 w-5" />
+                Proses Cabang
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Terima Berkas</label>
                   <Input
                     type="date"
-                    value={formData.tanggal_surat_kematian}
-                    onChange={(e) => setFormData({ ...formData, tanggal_surat_kematian: e.target.value })}
+                    value={formData.cabang_tanggal_awal_terima_berkas}
+                    onChange={(e) => setFormData({ ...formData, cabang_tanggal_awal_terima_berkas: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Kirim ke Pusat</label>
+                  <Input
+                    type="date"
+                    value={formData.cabang_tanggal_kirim_ke_pusat}
+                    onChange={(e) => setFormData({ ...formData, cabang_tanggal_kirim_ke_pusat: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Proses Pusat Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Building className="h-5 w-5" />
+                Proses Pusat
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Terima</label>
+                  <Input
+                    type="date"
+                    value={formData.pusat_tanggal_awal_terima}
+                    onChange={(e) => setFormData({ ...formData, pusat_tanggal_awal_terima: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Validasi</label>
+                  <Input
+                    type="date"
+                    value={formData.pusat_tanggal_validasi}
+                    onChange={(e) => setFormData({ ...formData, pusat_tanggal_validasi: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Selesai</label>
+                  <Input
+                    type="date"
+                    value={formData.pusat_tanggal_selesai}
+                    onChange={(e) => setFormData({ ...formData, pusat_tanggal_selesai: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Dana Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Dana Kematian
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Besaran Dana Kematian (Rp) *</label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={formData.besaran_dana_kematian}
+                    onChange={(e) => setFormData({ ...formData, besaran_dana_kematian: parseFloat(e.target.value) || 0 })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Serah ke Ahli Waris</label>
+                  <Input
+                    type="date"
+                    value={formData.cabang_tanggal_serah_ke_ahli_waris}
+                    onChange={(e) => setFormData({ ...formData, cabang_tanggal_serah_ke_ahli_waris: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tanggal Lapor ke Pusat</label>
+                  <Input
+                    type="date"
+                    value={formData.cabang_tanggal_lapor_ke_pusat}
+                    onChange={(e) => setFormData({ ...formData, cabang_tanggal_lapor_ke_pusat: e.target.value })}
                   />
                 </div>
               </div>
@@ -245,136 +405,116 @@ export function DanaKematianFormModal({
                   <label className="text-sm font-medium">Nama Ahli Waris *</label>
                   <Input
                     placeholder="Nama lengkap ahli waris"
-                    value={formData.nama_ahli_waris}
-                    onChange={(e) => setFormData({ ...formData, nama_ahli_waris: e.target.value })}
+                    value={formData.ahli_waris_nama}
+                    onChange={(e) => setFormData({ ...formData, ahli_waris_nama: e.target.value })}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Hubungan Ahli Waris *</label>
+                  <label className="text-sm font-medium">Status Ahli Waris *</label>
                   <Select
-                    value={formData.hubungan_ahli_waris}
-                    onValueChange={(value) => setFormData({ ...formData, hubungan_ahli_waris: value })}
-                    required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih hubungan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Istri/Suami">Istri/Suami</SelectItem>
-                      <SelectItem value="Anak">Anak</SelectItem>
-                      <SelectItem value="Orang Tua">Orang Tua</SelectItem>
-                      <SelectItem value="Saudara">Saudara</SelectItem>
-                      <SelectItem value="Lainnya">Lainnya</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">NIK KTP Ahli Waris *</label>
-                  <Input
-                    placeholder="NIK KTP ahli waris"
-                    value={formData.nik_ktp_ahli_waris}
-                    onChange={(e) => setFormData({ ...formData, nik_ktp_ahli_waris: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Nomor Kontak Ahli Waris *</label>
-                  <Input
-                    placeholder="Nomor kontak"
-                    value={formData.nomor_kontak_ahli_waris}
-                    onChange={(e) => setFormData({ ...formData, nomor_kontak_ahli_waris: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium">Alamat Ahli Waris *</label>
-                  <Input
-                    placeholder="Alamat lengkap ahli waris"
-                    value={formData.alamat_ahli_waris}
-                    onChange={(e) => setFormData({ ...formData, alamat_ahli_waris: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Detail Dana Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Detail Dana
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Jumlah Uang Duka (Rupiah) *</label>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    value={formData.jumlah_uang_duka}
-                    onChange={(e) => setFormData({ ...formData, jumlah_uang_duka: parseFloat(e.target.value) || 0 })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Status Pengajuan *</label>
-                  <Select
-                    value={formData.status_pengajuan}
-                    onValueChange={(value) => setFormData({ ...formData, status_pengajuan: value as any })}
+                    value={formData.status_ahli_waris}
+                    onValueChange={(value) => setFormData({ ...formData, status_ahli_waris: value as any })}
                     required
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Dalam Proses">Dalam Proses</SelectItem>
-                      <SelectItem value="Disetujui">Disetujui</SelectItem>
-                      <SelectItem value="Ditolak">Ditolak</SelectItem>
-                      <SelectItem value="Dibayar">Dibayar</SelectItem>
-                      <SelectItem value="Selesai">Selesai</SelectItem>
+                      <SelectItem value="istri">Istri</SelectItem>
+                      <SelectItem value="suami">Suami</SelectItem>
+                      <SelectItem value="anak">Anak</SelectItem>
+                      <SelectItem value="keluarga">Keluarga</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+            </div>
+
+            {/* File Dokumen Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                File Dokumen
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FileUpload
+                  label="File SK Pensiun"
+                  value={formData.file_sk_pensiun}
+                  onChange={(url) => setFormData({ ...formData, file_sk_pensiun: url })}
+                  folder="sk-pensiun"
+                  disabled={isPending}
+                />
+                <FileUpload
+                  label="File Surat Kematian"
+                  value={formData.file_surat_kematian}
+                  onChange={(url) => setFormData({ ...formData, file_surat_kematian: url })}
+                  folder="surat-kematian"
+                  disabled={isPending}
+                />
+                <FileUpload
+                  label="File Surat Pernyataan Ahli Waris"
+                  value={formData.file_surat_pernyataan_ahli_waris}
+                  onChange={(url) => setFormData({ ...formData, file_surat_pernyataan_ahli_waris: url })}
+                  folder="surat-pernyataan-ahli-waris"
+                  disabled={isPending}
+                />
+                <FileUpload
+                  label="File Kartu Keluarga"
+                  value={formData.file_kartu_keluarga}
+                  onChange={(url) => setFormData({ ...formData, file_kartu_keluarga: url })}
+                  folder="kartu-keluarga"
+                  disabled={isPending}
+                />
+                <FileUpload
+                  label="File E-KTP"
+                  value={formData.file_e_ktp}
+                  onChange={(url) => setFormData({ ...formData, file_e_ktp: url })}
+                  folder="e-ktp"
+                  disabled={isPending}
+                />
+                <FileUpload
+                  label="File Surat Nikah"
+                  value={formData.file_surat_nikah}
+                  onChange={(url) => setFormData({ ...formData, file_surat_nikah: url })}
+                  folder="surat-nikah"
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+
+            {/* Status Proses Section */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Status Proses
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Metode Pembayaran *</label>
+                  <label className="text-sm font-medium">Status Proses *</label>
                   <Select
-                    value={formData.metode_pembayaran}
-                    onValueChange={(value) => setFormData({ ...formData, metode_pembayaran: value })}
+                    value={formData.status_proses}
+                    onValueChange={(value) => setFormData({ ...formData, status_proses: value as any })}
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih metode pembayaran" />
+                      <SelectValue placeholder="Pilih status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Transfer">Transfer Bank</SelectItem>
-                      <SelectItem value="Tunai">Tunai</SelectItem>
-                      <SelectItem value="Cek">Cek</SelectItem>
+                      <SelectItem value="dilaporkan">Dilaporkan</SelectItem>
+                      <SelectItem value="verifikasi_cabang">Verifikasi Cabang</SelectItem>
+                      <SelectItem value="proses_pusat">Proses Pusat</SelectItem>
+                      <SelectItem value="selesai">Selesai</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Nama Bank</label>
-                  <Input
-                    placeholder="Nama bank"
-                    value={formData.nama_bank}
-                    onChange={(e) => setFormData({ ...formData, nama_bank: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Nomor Rekening</label>
-                  <Input
-                    placeholder="Nomor rekening"
-                    value={formData.no_rekening}
-                    onChange={(e) => setFormData({ ...formData, no_rekening: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium">Catatan</label>
-                  <Input
-                    placeholder="Catatan tambahan"
-                    value={formData.catatan}
-                    onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
+                  <label className="text-sm font-medium">Keterangan</label>
+                  <Textarea
+                    placeholder="Keterangan tambahan"
+                    value={formData.keterangan}
+                    onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
+                    rows={3}
                   />
                 </div>
               </div>

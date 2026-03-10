@@ -25,7 +25,7 @@ interface ApiError {
 // Fetch all death benefits with filters
 export function useDanaKematianList(params: {
   search?: string;
-  status_pengajuan?: string;
+  status_proses?: string;
   tanggal_meninggal_from?: string;
   tanggal_meninggal_to?: string;
   page?: number;
@@ -33,8 +33,8 @@ export function useDanaKematianList(params: {
 }) {
   const queryParams = new URLSearchParams();
   if (params.search) queryParams.set('search', params.search);
-  if (params.status_pengajuan && params.status_pengajuan !== 'all') {
-    queryParams.set('status_pengajuan', params.status_pengajuan);
+  if (params.status_proses && params.status_proses !== 'all') {
+    queryParams.set('status_proses', params.status_proses);
   }
   if (params.tanggal_meninggal_from) {
     queryParams.set('tanggal_meninggal_from', params.tanggal_meninggal_from);

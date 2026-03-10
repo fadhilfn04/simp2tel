@@ -54,46 +54,71 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
         return;
       }
 
-      // Map and validate data
+      // Map and validate data with new field structure
       const mappedData = jsonData.map((row: any) => ({
-        nik_ktp: String(row.nik_ktp || row['NIK KTP'] || row['NIK_KTP'] || '').trim(),
-        nama: String(row.nama || row['Nama'] || row['NAMA'] || '').trim(),
-        tempat_lahir: String(row.tempat_lahir || row['Tempat Lahir'] || row['TEMPAT_LAHIR'] || '').trim(),
-        // Optional fields
-        nikap: String(row.nikap || row['NIKAP'] || '').trim(),
-        tanggal_lahir: row.tanggal_lahir || row['Tanggal Lahir'] || new Date().toISOString().split('T')[0],
-        status_anggota: row.status_anggota || row['Status Anggota'] || 'Aktif',
-        jenis_anggota: row.jenis_anggota || row['Jenis Anggota'] || 'Pensiunan',
-        status_iuran: row.status_iuran || row['Status Iuran'] || 'Lunas',
-        status_kesehatan: row.status_kesehatan || row['Status Kesehatan'] || 'Sehat',
-        jenis_kelamin: row.jenis_kelamin || row['Jenis Kelamin'] || 'Laki-laki',
-        agama: row.agama || row['Agama'] || 'Islam',
-        status_perkawinan: row.status_perkawinan || row['Status Perkawinan'] || 'Menikah',
-        sk_pensiun: String(row.sk_pensiun || row['SK Pensiun'] || '').trim(),
-        nomor_kontak: String(row.nomor_kontak || row['Nomor Kontak'] || '').trim(),
+        nik: String(row.nik || row['NIK'] || '').trim(),
+        nama_anggota: String(row.nama_anggota || row['Nama Anggota'] || row['nama'] || row['Nama'] || '').trim(),
+        kategori_anggota: row.kategori_anggota || row['Kategori Anggota'] || 'biasa',
+        status_anggota: row.status_anggota || row['Status Anggota'] || 'pegawai',
+        status_mps: row.status_mps || row['Status MPS'] || 'non_mps',
+        status_iuran: row.status_iuran || row['Status Iuran'] || 'belum_ttd',
+        nama_cabang: String(row.nama_cabang || row['Nama Cabang'] || row['cabang'] || row['Cabang'] || '').trim(),
+        posisi_kepengurusan: String(row.posisi_kepengurusan || row['Posisi Kepengurusan'] || 'Anggota').trim(),
+        status_kepesertaan: row.status_kepesertaan || row['Status Kepesertaan'] || '',
+        cabang_kelas: row.cabang_kelas || row['Cabang Kelas'] || '',
+        cabang_area_regional: row.cabang_area_regional || row['Cabang Area Regional'] || '',
+        cabang_area_witel: row.cabang_area_witel || row['Cabang Area Witel'] || '',
+        pasutri: row.pasutri || row['Pasutri'] || '',
+        status_perkawinan: row.status_perkawinan || row['Status Perkawinan'] || 'kawin',
+        sk_pensiun: row.sk_pensiun || row['SK Pensiun'] || 'pensiun',
+        nomor_sk_pensiun: String(row.nomor_sk_pensiun || row['Nomor SK Pensiun'] || '').trim(),
         alamat: String(row.alamat || row['Alamat'] || '').trim(),
         rt: String(row.rt || row['RT'] || '').trim(),
         rw: String(row.rw || row['RW'] || '').trim(),
         kelurahan: String(row.kelurahan || row['Kelurahan'] || '').trim(),
         kecamatan: String(row.kecamatan || row['Kecamatan'] || '').trim(),
+        provinsi: String(row.provinsi || row['Provinsi'] || '').trim(),
         kota: String(row.kota || row['Kota'] || '').trim(),
         kode_pos: String(row.kode_pos || row['Kode Pos'] || '').trim(),
-        cabang_domisili: String(row.cabang_domisili || row['Cabang Domisili'] || 'Cabang Jakarta').trim(),
-        golongan_darah: String(row.golongan_darah || row['Golongan Darah'] || '').trim(),
-        no_kk: String(row.no_kk || row['No KK'] || '').trim(),
-        surat_nikah: String(row.surat_nikah || row['Surat Nikah'] || '').trim(),
+        nomor_handphone: String(row.nomor_handphone || row['Nomor Handphone'] || row['no_hp'] || '').trim(),
+        nomor_telepon: String(row.nomor_telepon || row['Nomor Telepon'] || '').trim(),
         email: String(row.email || row['Email'] || '').trim(),
+        sosial_media: String(row.sosial_media || row['Sosial Media'] || '').trim(),
+        e_ktp: String(row.e_ktp || row['E-KTP'] || '').trim(),
+        kartu_keluarga: String(row.kartu_keluarga || row['Kartu Keluarga'] || row['kk'] || '').trim(),
+        npwp: String(row.npwp || row['NPWP'] || '').trim(),
+        tempat_lahir: String(row.tempat_lahir || row['Tempat Lahir'] || '').trim(),
+        tanggal_lahir: row.tanggal_lahir || row['Tanggal Lahir'] || '',
+        jenis_kelamin: row.jenis_kelamin || row['Jenis Kelamin'] || 'laki_laki',
+        agama: row.agama || row['Agama'] || 'islam',
+        golongan_darah: row.golongan_darah || row['Golongan Darah'] || 'A',
+        besaran_iuran: parseFloat(row.besaran_iuran || row['Besaran Iuran'] || '0') || 0,
+        form_kesediaan_iuran: row.form_kesediaan_iuran === 'true' || row.form_kesediaan_iuran === true || row['Form Kesediaan Iuran'] === 'Ya' || false,
+        nama_bank: row.nama_bank || row['Nama Bank'] || '',
+        norek_bank: String(row.norek_bank || row['Nomor Rekening'] || row['No Rek'] || '').trim(),
+        kategori_bantuan: row.kategori_bantuan || row['Kategori Bantuan'] || '',
+        tanggal_terima_bantuan: row.tanggal_terima_bantuan || row['Tanggal Terima Bantuan'] || '',
+        gambar_kondisi_tempat_tinggal: String(row.gambar_kondisi_tempat_tinggal || row['Gambar Kondisi'] || '').trim(),
+        alasan_mutasi: row.alasan_mutasi || row['Alasan Mutasi'] || '',
+        tanggal_mutasi: row.tanggal_mutasi || row['Tanggal Mutasi'] || '',
+        cabang_pengajuan_mutasi: row.cabang_pengajuan_mutasi || row['Cabang Pengajuan Mutasi'] || '',
+        pusat_pengesahan_mutasi: row.pusat_pengesahan_mutasi || row['Pusat Pengesahan Mutasi'] || '',
+        status_bpjs: row.status_bpjs === 'true' || row.status_bpjs === true || row['Status BPJS'] === 'Aktif' || false,
+        bpjs_kelas: row.bpjs_kelas || row['Kelas BPJS'] || '',
+        bpjs_insentif: row.bpjs_insentif === 'true' || row.bpjs_insentif === true || false,
+        kategori_datul: row.kategori_datul || row['Kategori Datul'] || '',
+        media_datul: row.media_datul || row['Media Datul'] || '',
       }));
 
       // Validate required fields
       const validData = mappedData.filter((item: any) => {
-        return item.nik_ktp && item.nama && item.tempat_lahir;
+        return item.nik && item.nama_anggota && item.nama_cabang && item.alamat;
       });
 
       const invalidCount = mappedData.length - validData.length;
 
       if (invalidCount > 0) {
-        alert(`${invalidCount} baris dilewati karena field tidak lengkap`);
+        alert(`${invalidCount} baris dilewati karena field wajib tidak lengkap (NIK, Nama Anggota, Nama Cabang, Alamat)`);
       }
 
       setImportPreview(validData);
@@ -126,35 +151,61 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
     try {
       const XLSX = await import('xlsx');
 
-      // Create template data
+      // Create template data with new field structure
       const templateData = [
         {
-          'nik_ktp': '3201123456789012',
-          'nama': 'Contoh Nama Anggota',
-          'tempat_lahir': 'Jakarta',
-          'nikap': '19801234',
-          'tanggal_lahir': '1960-01-01',
-          'status_anggota': 'Aktif',
-          'jenis_anggota': 'Pensiunan',
-          'status_iuran': 'Lunas',
-          'status_kesehatan': 'Sehat',
-          'jenis_kelamin': 'Laki-laki',
-          'agama': 'Islam',
-          'status_perkawinan': 'Menikah',
-          'sk_pensiun': 'SKP-12345',
-          'nomor_kontak': '08123456789',
+          'nik': '3201123456789012',
+          'nama_anggota': 'Contoh Nama Anggota',
+          'kategori_anggota': 'biasa',
+          'status_anggota': 'pegawai',
+          'status_mps': 'non_mps',
+          'status_iuran': 'belum_ttd',
+          'nama_cabang': 'Cabang Jakarta',
+          'posisi_kepengurusan': 'Anggota',
+          'status_kepesertaan': 'Aktif',
+          'cabang_kelas': 'A',
+          'cabang_area_regional': 'Regional 1',
+          'cabang_area_witel': 'Witel Jakarta',
+          'pasutri': '',
+          'status_perkawinan': 'kawin',
+          'sk_pensiun': 'pensiun',
+          'nomor_sk_pensiun': 'SKP-12345',
           'alamat': 'Jl. Contoh No. 123',
           'rt': '001',
           'rw': '001',
           'kelurahan': 'Contoh',
           'kecamatan': 'Contoh',
-          'kota': 'Jakarta',
+          'provinsi': 'DKI Jakarta',
+          'kota': 'Jakarta Selatan',
           'kode_pos': '12345',
-          'cabang_domisili': 'Cabang Jakarta',
+          'nomor_handphone': '08123456789',
+          'nomor_telepon': '0211234567',
+          'email': 'contoh@email.com',
+          'sosial_media': '@username',
+          'e_ktp': '3201123456789012',
+          'kartu_keluarga': '1234567890123456',
+          'npwp': '123456789012345',
+          'tempat_lahir': 'Jakarta',
+          'tanggal_lahir': '1960-01-01',
+          'jenis_kelamin': 'laki_laki',
+          'agama': 'islam',
           'golongan_darah': 'A',
-          'no_kk': '1234567890123456',
-          'surat_nikah': '123/abc/456',
-          'email': 'contoh@email.com'
+          'besaran_iuran': '100000',
+          'form_kesediaan_iuran': 'true',
+          'nama_bank': 'BCA',
+          'norek_bank': '1234567890',
+          'kategori_bantuan': '',
+          'tanggal_terima_bantuan': '',
+          'gambar_kondisi_tempat_tinggal': '',
+          'alasan_mutasi': '',
+          'tanggal_mutasi': '',
+          'cabang_pengajuan_mutasi': '',
+          'pusat_pengesahan_mutasi': '',
+          'status_bpjs': 'true',
+          'bpjs_kelas': '1',
+          'bpjs_insentif': 'false',
+          'kategori_datul': '',
+          'media_datul': ''
         }
       ];
 
@@ -163,12 +214,14 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
 
       // Set column widths
       worksheet['!cols'] = [
-        { wch: 20 }, { wch: 25 }, { wch: 15 }, { wch: 12 }, { wch: 12 },
-        { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 },
-        { wch: 10 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 30 },
-        { wch: 5 }, { wch: 5 }, { wch: 20 }, { wch: 20 }, { wch: 20 },
-        { wch: 8 }, { wch: 20 }, { wch: 5 }, { wch: 20 }, { wch: 15 },
-        { wch: 25 },
+        { wch: 20 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
+        { wch: 12 }, { wch: 20 }, { wch: 25 }, { wch: 20 }, { wch: 15 },
+        { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 30 }, { wch: 5 },
+        { wch: 5 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 8 },
+        { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 20 },
+        { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 15 },
+        { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 10 },
+        { wch: 10 }, { wch: 15 },
       ];
 
       // Create workbook
@@ -274,18 +327,22 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
             <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
               Field Wajib (Required)
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-blue-600" />
-                <span className="text-blue-800 dark:text-blue-200">nik_ktp</span>
+                <span className="text-blue-800 dark:text-blue-200">nik</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-blue-600" />
-                <span className="text-blue-800 dark:text-blue-200">nama</span>
+                <span className="text-blue-800 dark:text-blue-200">nama_anggota</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-blue-600" />
-                <span className="text-blue-800 dark:text-blue-200">tempat_lahir</span>
+                <span className="text-blue-800 dark:text-blue-200">nama_cabang</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-blue-600" />
+                <span className="text-blue-800 dark:text-blue-200">alamat</span>
               </div>
             </div>
             <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
@@ -321,9 +378,9 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
                     <thead className="bg-muted sticky top-0">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium">No</th>
-                        <th className="px-3 py-2 text-left font-medium">NIK KTP</th>
-                        <th className="px-3 py-2 text-left font-medium">Nama</th>
-                        <th className="px-3 py-2 text-left font-medium">Tempat Lahir</th>
+                        <th className="px-3 py-2 text-left font-medium">NIK</th>
+                        <th className="px-3 py-2 text-left font-medium">Nama Anggota</th>
+                        <th className="px-3 py-2 text-left font-medium">Cabang</th>
                         <th className="px-3 py-2 text-left font-medium">Status</th>
                       </tr>
                     </thead>
@@ -331,11 +388,11 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
                       {importPreview.slice(0, 10).map((row, index) => (
                         <tr key={index} className="border-t">
                           <td className="px-3 py-2">{index + 1}</td>
-                          <td className="px-3 py-2 font-mono text-xs">{row.nik_ktp || '-'}</td>
-                          <td className="px-3 py-2">{row.nama || '-'}</td>
-                          <td className="px-3 py-2">{row.tempat_lahir || '-'}</td>
+                          <td className="px-3 py-2 font-mono text-xs">{row.nik || '-'}</td>
+                          <td className="px-3 py-2">{row.nama_anggota || '-'}</td>
+                          <td className="px-3 py-2">{row.nama_cabang || '-'}</td>
                           <td className="px-3 py-2">
-                            {row.nik_ktp && row.nama && row.tempat_lahir ? (
+                            {row.nik && row.nama_anggota && row.nama_cabang && row.alamat ? (
                               <Badge variant="success" appearance="ghost" className="text-xs">
                                 Valid
                               </Badge>

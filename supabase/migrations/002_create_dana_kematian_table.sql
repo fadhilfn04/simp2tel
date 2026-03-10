@@ -1,90 +1,194 @@
--- Death benefits table
-CREATE TABLE dana_kematian (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  anggota_id UUID NOT NULL REFERENCES anggota(id) ON DELETE SET NULL,
-  nama_meninggal VARCHAR(255) NOT NULL,
-  nik_ktp_meninggal VARCHAR(20) NOT NULL,
-  nikap_meninggal VARCHAR(20) NOT NULL,
-  tanggal_meninggal DATE NOT NULL,
-  tempat_meninggal VARCHAR(100) NOT NULL,
-  penyebab_meninggal TEXT,
-  no_surat_kematian VARCHAR(100) UNIQUE,
-  tanggal_surat_kematian DATE,
+-- =====================================================
+-- ENUM TYPES
+-- =====================================================
 
-  -- Beneficiary info
-  nama_ahli_waris VARCHAR(255) NOT NULL,
-  hubungan_ahli_waris VARCHAR(50) NOT NULL,
-  nik_ktp_ahli_waris VARCHAR(20) NOT NULL,
-  alamat_ahli_waris TEXT NOT NULL,
-  nomor_kontak_ahli_waris VARCHAR(20) NOT NULL,
-
-  -- Benefit details
-  jumlah_uang_duka DECIMAL(15,2) NOT NULL DEFAULT 0,
-  mata_uang VARCHAR(10) DEFAULT 'IDR',
-  status_pengajuan VARCHAR(50) NOT NULL DEFAULT 'Pending',
-  catatan TEXT,
-
-  -- Payment info
-  tanggal_pengajuan DATE NOT NULL DEFAULT CURRENT_DATE,
-  tanggal_persetujuan DATE,
-  tanggal_pembayaran DATE,
-  metode_pembayaran VARCHAR(50),
-  no_rekening VARCHAR(50),
-  nama_bank VARCHAR(50),
-  bukti_pembayaran TEXT,
-
-  -- Documentation
-  dokumen_kematian TEXT,
-  dokumen_ahli_waris TEXT,
-  dokumen_lain TEXT,
-
-  -- Approval
-  disetujui_oleh VARCHAR(255),
-  catatan_persetujuan TEXT,
-
-  created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITHOUT TIME ZONE,
-
-  CONSTRAINT check_status CHECK (status_pengajuan IN ('Pending', 'Dalam Proses', 'Disetujui', 'Ditolak', 'Dibayar', 'Selesai'))
+CREATE TYPE status_ahli_waris_enum AS ENUM (
+    'istri',
+    'suami',
+    'anak',
+    'keluarga'
 );
 
--- Indexes for performance
-CREATE INDEX idx_dana_kematian_anggota_id ON dana_kematian(anggota_id);
-CREATE INDEX idx_dana_kematian_status ON dana_kematian(status_pengajuan);
-CREATE INDEX idx_dana_kematian_tanggal_meninggal ON dana_kematian(tanggal_meninggal);
-CREATE INDEX idx_dana_kematian_deleted_at ON dana_kematian(deleted_at);
+CREATE TYPE status_proses_dakem_enum AS ENUM (
+    'dilaporkan',
+    'verifikasi_cabang',
+    'proses_pusat',
+    'selesai'
+);
 
--- Trigger for updated_at
-CREATE OR REPLACE FUNCTION update_dana_kematian_updated_at()
+-- =====================================================
+-- TABLE
+-- =====================================================
+
+CREATE TABLE dana_kematian (
+
+    --------------------------------------------------
+    -- PRIMARY
+    --------------------------------------------------
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    anggota_id UUID REFERENCES anggota(id) ON DELETE SET NULL,
+
+    --------------------------------------------------
+    -- DATA ANGGOTA
+    --------------------------------------------------
+
+    nama_anggota VARCHAR(200) NOT NULL,
+    status_anggota status_anggota_enum NOT NULL,
+    status_mps status_mps_enum NOT NULL,
+
+    --------------------------------------------------
+    -- DATA KEMATIAN
+    --------------------------------------------------
+
+    tanggal_meninggal DATE NOT NULL,
+    penyebab_meninggal TEXT,
+
+    --------------------------------------------------
+    -- DATA PELAPORAN
+    --------------------------------------------------
+
+    tanggal_lapor_keluarga DATE,
+
+    cabang_asal_melapor VARCHAR(120) NOT NULL,
+
+    cabang_nama_pelapor VARCHAR(150),
+    cabang_nik_pelapor VARCHAR(25),
+
+    --------------------------------------------------
+    -- PROSES CABANG
+    --------------------------------------------------
+
+    cabang_tanggal_awal_terima_berkas DATE,
+    cabang_tanggal_kirim_ke_pusat DATE,
+
+    --------------------------------------------------
+    -- PROSES PUSAT
+    --------------------------------------------------
+
+    pusat_tanggal_awal_terima DATE,
+    pusat_tanggal_validasi DATE,
+    pusat_tanggal_selesai DATE,
+
+    --------------------------------------------------
+    -- DANA
+    --------------------------------------------------
+
+    besaran_dana_kematian NUMERIC(14,2) NOT NULL,
+
+    --------------------------------------------------
+    -- PENYERAHAN KE AHLI WARIS
+    --------------------------------------------------
+
+    cabang_tanggal_serah_ke_ahli_waris DATE,
+    cabang_tanggal_lapor_ke_pusat DATE,
+
+    --------------------------------------------------
+    -- DATA AHLI WARIS
+    --------------------------------------------------
+
+    ahli_waris_nama VARCHAR(200) NOT NULL,
+    status_ahli_waris status_ahli_waris_enum NOT NULL,
+
+    --------------------------------------------------
+    -- FILE DOKUMEN
+    --------------------------------------------------
+
+    file_sk_pensiun TEXT,
+    file_surat_kematian TEXT,
+    file_surat_pernyataan_ahli_waris TEXT,
+    file_kartu_keluarga TEXT,
+    file_e_ktp TEXT,
+    file_surat_nikah TEXT,
+
+    --------------------------------------------------
+    -- STATUS PROSES
+    --------------------------------------------------
+
+    status_proses status_proses_dakem_enum DEFAULT 'dilaporkan',
+
+    --------------------------------------------------
+    -- CATATAN
+    --------------------------------------------------
+
+    keterangan TEXT,
+
+    --------------------------------------------------
+    -- TIMESTAMP
+    --------------------------------------------------
+
+    created_at TIMESTAMPTZ DEFAULT timezone('utc', now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc', now()),
+    deleted_at TIMESTAMPTZ
+);
+
+-- =====================================================
+-- INDEXING (VERY IMPORTANT)
+-- =====================================================
+
+-- Query berdasarkan anggota
+CREATE INDEX idx_dakem_anggota
+ON dana_kematian(anggota_id);
+
+-- Query laporan per cabang
+CREATE INDEX idx_dakem_cabang
+ON dana_kematian(cabang_asal_melapor);
+
+-- Query laporan per tanggal meninggal
+CREATE INDEX idx_dakem_tanggal_meninggal
+ON dana_kematian(tanggal_meninggal DESC);
+
+-- Query proses
+CREATE INDEX idx_dakem_status_proses
+ON dana_kematian(status_proses);
+
+-- Query laporan per tahun
+CREATE INDEX idx_dakem_tahun_meninggal
+ON dana_kematian(EXTRACT(YEAR FROM tanggal_meninggal));
+
+-- Soft delete
+CREATE INDEX idx_dakem_not_deleted
+ON dana_kematian(id)
+WHERE deleted_at IS NULL;
+
+-- =====================================================
+-- TRIGGER UPDATE UPDATED_AT
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION update_dakem_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
-  NEW.updated_at = CURRENT_TIMESTAMP;
-  RETURN NEW;
+    NEW.updated_at = timezone('utc', now());
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trigger_update_dana_kematian_updated_at
-  BEFORE UPDATE ON dana_kematian
-  FOR EACH ROW
-  EXECUTE FUNCTION update_dana_kematian_updated_at();
+CREATE TRIGGER trg_update_dakem_updated_at
+BEFORE UPDATE ON dana_kematian
+FOR EACH ROW
+EXECUTE FUNCTION update_dakem_updated_at();
 
--- Comments for documentation
-COMMENT ON TABLE dana_kematian IS 'Death benefits claims for deceased members';
-COMMENT ON COLUMN dana_kematian.id IS 'Unique identifier';
-COMMENT ON COLUMN dana_kematian.anggota_id IS 'Reference to deceased member';
-COMMENT ON COLUMN dana_kematian.nama_meninggal IS 'Name of deceased member';
-COMMENT ON COLUMN dana_kematian.nik_ktp_meninggal IS 'KTP of deceased member';
-COMMENT ON COLUMN dana_kematian.nikap_meninggal IS 'Member ID of deceased';
-COMMENT ON COLUMN dana_kematian.tanggal_meninggal IS 'Date of death';
-COMMENT ON COLUMN dana_kematian.tempat_meninggal IS 'Place of death';
-COMMENT ON COLUMN dana_kematian.penyebab_meninggal IS 'Cause of death';
-COMMENT ON COLUMN dana_kematian.no_surat_kematian IS 'Death certificate number';
-COMMENT ON COLUMN dana_kematian.nama_ahli_waris IS 'Beneficiary name';
-COMMENT ON COLUMN dana_kematian.hubungan_ahli_waris IS 'Relationship to deceased';
-COMMENT ON COLUMN dana_kematian.nik_ktp_ahli_waris IS 'Beneficiary KTP';
-COMMENT ON COLUMN dana_kematian.jumlah_uang_duka IS 'Benefit amount';
-COMMENT ON COLUMN dana_kematian.status_pengajuan IS 'Claim status';
-COMMENT ON COLUMN dana_kematian.tanggal_pengajuan IS 'Claim submission date';
-COMMENT ON COLUMN dana_kematian.tanggal_persetujuan IS 'Approval date';
-COMMENT ON COLUMN dana_kematian.tanggal_pembayaran IS 'Payment date';
+-- =====================================================
+-- COMMENTS
+-- =====================================================
+
+COMMENT ON TABLE dana_kematian IS 'Tabel dana kematian anggota P2TEL';
+
+COMMENT ON COLUMN dana_kematian.id IS 'Primary key dana kematian';
+COMMENT ON COLUMN dana_kematian.anggota_id IS 'Relasi ke tabel anggota';
+COMMENT ON COLUMN dana_kematian.nama_anggota IS 'Nama anggota yang meninggal';
+COMMENT ON COLUMN dana_kematian.status_anggota IS 'Status anggota dalam keluarga';
+COMMENT ON COLUMN dana_kematian.status_mps IS 'Status MPS anggota';
+COMMENT ON COLUMN dana_kematian.tanggal_meninggal IS 'Tanggal meninggal anggota';
+COMMENT ON COLUMN dana_kematian.penyebab_meninggal IS 'Penyebab meninggal dunia';
+COMMENT ON COLUMN dana_kematian.tanggal_lapor_keluarga IS 'Tanggal keluarga melapor ke cabang';
+COMMENT ON COLUMN dana_kematian.cabang_asal_melapor IS 'Cabang tempat laporan awal';
+COMMENT ON COLUMN dana_kematian.cabang_nama_pelapor IS 'Nama petugas cabang yang menerima laporan';
+COMMENT ON COLUMN dana_kematian.cabang_nik_pelapor IS 'NIK petugas cabang';
+COMMENT ON COLUMN dana_kematian.besaran_dana_kematian IS 'Nominal dana kematian yang diberikan';
+COMMENT ON COLUMN dana_kematian.ahli_waris_nama IS 'Nama ahli waris penerima dana';
+COMMENT ON COLUMN dana_kematian.status_ahli_waris IS 'Hubungan ahli waris dengan anggota';
+COMMENT ON COLUMN dana_kematian.status_proses IS 'Status proses dana kematian';
+COMMENT ON COLUMN dana_kematian.keterangan IS 'Catatan tambahan proses dana kematian';
+COMMENT ON COLUMN dana_kematian.deleted_at IS 'Soft delete timestamp';

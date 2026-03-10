@@ -73,9 +73,9 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
               </Link>
             </div>
           </div>
-          <Badge variant="primary" appearance="light" size="sm">
+          {/* <Badge variant="primary" appearance="light" size="sm">
             Pro
-          </Badge>
+          </Badge> */}
         </div>
 
         <DropdownMenuSeparator />
@@ -175,7 +175,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
         </DropdownMenuItem> */}
 
         {/* Language Submenu with Radio Group */}
-        <DropdownMenuSub>
+        {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger className="flex items-center gap-2 [&_[data-slot=dropdown-menu-sub-trigger-indicator]]:hidden hover:[&_[data-slot=badge]]:border-input data-[state=open]:[&_[data-slot=badge]]:border-input">
             <Globe />
             <span className="flex items-center justify-between gap-2 grow relative">
@@ -221,7 +221,7 @@ export function UserDropdownMenu({ trigger }: { trigger: ReactNode }) {
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator /> */}
 
         {/* Footer */}
         <DropdownMenuItem

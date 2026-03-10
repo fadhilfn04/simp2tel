@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, DanaKematian, CreateDanaKematianInput, DanaKematianFilter } from '@/lib/supabase';
+import { supabase, CreateDanaKematianInput, DanaKematianFilter } from '@/lib/supabase';
 
 // GET /api/dana-kematian - List death benefits with filtering
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get('search') || '';
-    const status = searchParams.get('status_pengajuan') || '';
+    const status = searchParams.get('status_proses') || '';
     const dateFrom = searchParams.get('tanggal_meninggal_from') || '';
     const dateTo = searchParams.get('tanggal_meninggal_to') || '';
     const page = parseInt(searchParams.get('page') || '1');
@@ -15,19 +15,19 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('dana_kematian')
-      .select('*, anggota!inner(nama, nikap, cabang_domisili)')
+      .select('*', { count: 'exact' })
       .is('deleted_at', null);
 
     // Search
     if (search) {
       query = query.or(
-        `nama_meninggal.ilike.%${search}%,nik_ktp_meninggal.ilike.%${search}%,nikap_meninggal.ilike.%${search}%,nama_ahli_waris.ilike.%${search}%`
+        `nama_anggota.ilike.%${search}%,ahli_waris_nama.ilike.%${search}%,cabang_asal_melapor.ilike.%${search}%`
       );
     }
 
     // Filter by status
     if (status && status !== 'all') {
-      query = query.eq('status_pengajuan', status);
+      query = query.eq('status_proses', status);
     }
 
     // Filter by date range
@@ -38,26 +38,15 @@ export async function GET(request: NextRequest) {
       query = query.lte('tanggal_meninggal', dateTo);
     }
 
-    // Get total count
-    const { count, error: countError } = await query;
-
-    if (countError) {
-      console.error('Error counting dana kematian:', countError);
-      return NextResponse.json(
-        { error: 'Failed to count records' },
-        { status: 500 }
-      );
-    }
-
     // Get paginated data
-    const { data: danaKematian, error } = await query
-      .order('tanggal_pengajuan', { ascending: false })
+    const { data: danaKematian, error, count } = await query
+      .order('tanggal_meninggal', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) {
       console.error('Error fetching dana kematian:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch dana kematian' },
+        { error: 'Failed to fetch dana kematian', details: error.message },
         { status: 500 }
       );
     }
@@ -65,7 +54,7 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil((count || 0) / limit);
 
     return NextResponse.json({
-      data: danaKematian,
+      data: danaKematian || [],
       pagination: {
         total: count || 0,
         page,
@@ -89,22 +78,18 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     const requiredFields = [
-      'anggota_id',
-      'nama_meninggal',
-      'nik_ktp_meninggal',
-      'nikap_meninggal',
+      'nama_anggota',
+      'status_anggota',
+      'status_mps',
       'tanggal_meninggal',
-      'tempat_meninggal',
-      'nama_ahli_waris',
-      'hubungan_ahli_waris',
-      'nik_ktp_ahli_waris',
-      'alamat_ahli_waris',
-      'nomor_kontak_ahli_waris',
-      'jumlah_uang_duka',
+      'cabang_asal_melapor',
+      'besaran_dana_kematian',
+      'ahli_waris_nama',
+      'status_ahli_waris',
     ];
 
     for (const field of requiredFields) {
-      if (!body[field as string]) {
+      if (!body[field as keyof CreateDanaKematianInput]) {
         return NextResponse.json(
           { error: `Field '${field}' is required` },
           { status: 400 }
@@ -112,46 +97,47 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check for duplicate death certificate
-    if (body.no_surat_kematian) {
-      const { data: existingCert } = await supabase
-        .from('dana_kematian')
+    // Check if member exists (if anggota_id is provided)
+    if (body.anggota_id) {
+      const { data: member } = await supabase
+        .from('anggota')
         .select('id')
-        .eq('no_surat_kematian', body.no_surat_kematian)
-        .is('deleted_at', null)
+        .eq('id', body.anggota_id)
         .single();
 
-      if (existingCert) {
+      if (!member) {
         return NextResponse.json(
-          { error: 'Nomor surat kematian already exists' },
-          { status: 409 }
+          { error: 'Anggota not found' },
+          { status: 404 }
         );
       }
-    }
-
-    // Check if member exists
-    const { data: member } = await supabase
-      .from('anggota')
-      .select('id')
-      .eq('id', body.anggota_id)
-      .single();
-
-    if (!member) {
-      return NextResponse.json(
-        { error: 'Anggota not found' },
-        { status: 404 }
-      );
     }
 
     // Create dana kematian
     const { data: newDanaKematian, error } = await supabase
       .from('dana_kematian')
-      .insert({
+      .insert([{
         ...body,
-        status_pengajuan: body.status_pengajuan || 'Pending',
-        mata_uang: body.mata_uang || 'IDR',
-        tanggal_pengajuan: body.tanggal_pengajuan || new Date().toISOString().split('T')[0],
-      })
+        penyebab_meninggal: body.penyebab_meninggal || null,
+        tanggal_lapor_keluarga: body.tanggal_lapor_keluarga || null,
+        cabang_nama_pelapor: body.cabang_nama_pelapor || null,
+        cabang_nik_pelapor: body.cabang_nik_pelapor || null,
+        cabang_tanggal_awal_terima_berkas: body.cabang_tanggal_awal_terima_berkas || null,
+        cabang_tanggal_kirim_ke_pusat: body.cabang_tanggal_kirim_ke_pusat || null,
+        pusat_tanggal_awal_terima: body.pusat_tanggal_awal_terima || null,
+        pusat_tanggal_validasi: body.pusat_tanggal_validasi || null,
+        pusat_tanggal_selesai: body.pusat_tanggal_selesai || null,
+        cabang_tanggal_serah_ke_ahli_waris: body.cabang_tanggal_serah_ke_ahli_waris || null,
+        cabang_tanggal_lapor_ke_pusat: body.cabang_tanggal_lapor_ke_pusat || null,
+        file_sk_pensiun: body.file_sk_pensiun || null,
+        file_surat_kematian: body.file_surat_kematian || null,
+        file_surat_pernyataan_ahli_waris: body.file_surat_pernyataan_ahli_waris || null,
+        file_kartu_keluarga: body.file_kartu_keluarga || null,
+        file_e_ktp: body.file_e_ktp || null,
+        file_surat_nikah: body.file_surat_nikah || null,
+        status_proses: body.status_proses || 'dilaporkan',
+        keterangan: body.keterangan || null,
+      }])
       .select()
       .single();
 
