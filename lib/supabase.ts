@@ -172,7 +172,7 @@ export interface DanaKematian {
   besaran_dana_kematian: number;
   cabang_tanggal_serah_ke_ahli_waris: string | null;
   cabang_tanggal_lapor_ke_pusat: string | null;
-  ahli_waris_nama: string;
+  nama_ahli_waris: string;
   status_ahli_waris: StatusAhliWarisEnum;
   file_sk_pensiun: string | null;
   file_surat_kematian: string | null;
@@ -206,7 +206,7 @@ export interface CreateDanaKematianInput {
   besaran_dana_kematian: number;
   cabang_tanggal_serah_ke_ahli_waris?: string;
   cabang_tanggal_lapor_ke_pusat?: string;
-  ahli_waris_nama: string;
+  nama_ahli_waris: string;
   status_ahli_waris: StatusAhliWarisEnum;
   file_sk_pensiun?: string;
   file_surat_kematian?: string;

@@ -88,7 +88,7 @@ CREATE TABLE dana_kematian (
     -- DATA AHLI WARIS
     --------------------------------------------------
 
-    ahli_waris_nama VARCHAR(200) NOT NULL,
+    nama_ahli_waris VARCHAR(200) NOT NULL,
     status_ahli_waris status_ahli_waris_enum NOT NULL,
 
     --------------------------------------------------
@@ -187,7 +187,7 @@ COMMENT ON COLUMN dana_kematian.cabang_asal_melapor IS 'Cabang tempat laporan aw
 COMMENT ON COLUMN dana_kematian.cabang_nama_pelapor IS 'Nama petugas cabang yang menerima laporan';
 COMMENT ON COLUMN dana_kematian.cabang_nik_pelapor IS 'NIK petugas cabang';
 COMMENT ON COLUMN dana_kematian.besaran_dana_kematian IS 'Nominal dana kematian yang diberikan';
-COMMENT ON COLUMN dana_kematian.ahli_waris_nama IS 'Nama ahli waris penerima dana';
+COMMENT ON COLUMN dana_kematian.nama_ahli_waris IS 'Nama ahli waris penerima dana';
 COMMENT ON COLUMN dana_kematian.status_ahli_waris IS 'Hubungan ahli waris dengan anggota';
 COMMENT ON COLUMN dana_kematian.status_proses IS 'Status proses dana kematian';
 COMMENT ON COLUMN dana_kematian.keterangan IS 'Catatan tambahan proses dana kematian';

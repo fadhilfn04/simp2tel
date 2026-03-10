@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     // Search
     if (search) {
       query = query.or(
-        `nama_anggota.ilike.%${search}%,ahli_waris_nama.ilike.%${search}%,cabang_asal_melapor.ilike.%${search}%`
+        `nama_anggota.ilike.%${search}%,nama_ahli_waris.ilike.%${search}%,cabang_asal_melapor.ilike.%${search}%`
       );
     }
 
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       'tanggal_meninggal',
       'cabang_asal_melapor',
       'besaran_dana_kematian',
-      'ahli_waris_nama',
+      'nama_ahli_waris',
       'status_ahli_waris',
     ];
 

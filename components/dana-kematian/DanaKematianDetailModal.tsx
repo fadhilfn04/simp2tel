@@ -242,7 +242,7 @@ export function DanaKematianDetailModal({ open, onClose, claim }: DanaKematianDe
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-muted-foreground">Nama Ahli Waris</label>
-                <div className="font-medium">{claim.ahli_waris_nama}</div>
+                <div className="font-medium">{claim.nama_ahli_waris}</div>
               </div>
               <div>
                 <label className="text-sm text-muted-foreground">Status Ahli Waris</label>

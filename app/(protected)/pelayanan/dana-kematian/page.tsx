@@ -209,14 +209,14 @@ export default function DanaKematianPage() {
         cell: ({ row }) => <span className="text-xs sm:text-sm">{formatDate(row.original.tanggal_meninggal)}</span>,
       },
       {
-        accessorKey: 'nama_meninggal',
+        accessorKey: 'nama_anggota',
         header: 'NAMA',
-        cell: ({ row }) => <div className="font-medium text-xs sm:text-sm">{row.original.nama_meninggal}</div>,
+        cell: ({ row }) => <div className="font-medium text-xs sm:text-sm">{row.original.nama_anggota}</div>,
       },
       {
-        accessorKey: 'nikap_meninggal',
-        header: 'NIKAP',
-        cell: ({ row }) => <span className="font-mono text-xs sm:text-sm">{row.original.nikap_meninggal}</span>,
+        accessorKey: 'status_mps',
+        header: 'MPS',
+        cell: ({ row }) => <span className="font-mono text-xs sm:text-sm">{row.original.status_mps}</span>,
       },
       {
         accessorKey: 'nama_ahli_waris',
@@ -224,7 +224,7 @@ export default function DanaKematianPage() {
         cell: ({ row }) => (
           <div>
             <div className="font-medium text-xs sm:text-sm">{row.original.nama_ahli_waris}</div>
-            <div className="text-xs text-muted-foreground">{row.original.hubungan_ahli_waris}</div>
+            <div className="text-xs text-muted-foreground">{row.original.status_ahli_waris}</div>
           </div>
         ),
       },

@@ -51,7 +51,7 @@ const defaultFormData: CreateDanaKematianInput = {
   besaran_dana_kematian: 0,
   cabang_tanggal_serah_ke_ahli_waris: '',
   cabang_tanggal_lapor_ke_pusat: '',
-  ahli_waris_nama: '',
+  nama_ahli_waris: '',
   status_ahli_waris: 'anak',
   file_sk_pensiun: '',
   file_surat_kematian: '',
@@ -96,7 +96,7 @@ export function DanaKematianFormModal({
         besaran_dana_kematian: claim.besaran_dana_kematian,
         cabang_tanggal_serah_ke_ahli_waris: claim.cabang_tanggal_serah_ke_ahli_waris || '',
         cabang_tanggal_lapor_ke_pusat: claim.cabang_tanggal_lapor_ke_pusat || '',
-        ahli_waris_nama: claim.ahli_waris_nama,
+        nama_ahli_waris: claim.nama_ahli_waris,
         status_ahli_waris: claim.status_ahli_waris,
         file_sk_pensiun: claim.file_sk_pensiun || '',
         file_surat_kematian: claim.file_surat_kematian || '',
@@ -405,8 +405,8 @@ export function DanaKematianFormModal({
                   <label className="text-sm font-medium">Nama Ahli Waris *</label>
                   <Input
                     placeholder="Nama lengkap ahli waris"
-                    value={formData.ahli_waris_nama}
-                    onChange={(e) => setFormData({ ...formData, ahli_waris_nama: e.target.value })}
+                    value={formData.nama_ahli_waris}
+                    onChange={(e) => setFormData({ ...formData, nama_ahli_waris: e.target.value })}
                     required
                   />
                 </div>

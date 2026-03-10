@@ -19,19 +19,15 @@ interface LatestClaimsProps {
 }
 
 export function LatestClaims({ claims, isLoading }: LatestClaimsProps) {
-  const getStatusProps = (status: DanaKematian['status_pengajuan']) => {
+  const getStatusProps = (status: DanaKematian['status_proses']) => {
     switch (status) {
-      case 'Pending':
-        return { variant: 'secondary' as const, label: 'Pending' };
-      case 'Dalam Proses':
-        return { variant: 'info' as const, label: 'Proses' };
-      case 'Disetujui':
-        return { variant: 'success' as const, label: 'Disetujui' };
-      case 'Ditolak':
-        return { variant: 'destructive' as const, label: 'Ditolak' };
-      case 'Dibayar':
-        return { variant: 'warning' as const, label: 'Dibayar' };
-      case 'Selesai':
+      case 'dilaporkan':
+        return { variant: 'secondary' as const, label: 'Dilaporkan' };
+      case 'verifikasi_cabang':
+        return { variant: 'info' as const, label: 'Verifikasi Cabang' };
+      case 'proses_pusat':
+        return { variant: 'warning' as const, label: 'Proses Pusat' };
+      case 'selesai':
         return { variant: 'success' as const, label: 'Selesai' };
       default:
         return { variant: 'secondary' as const, label: status };
@@ -123,15 +119,15 @@ export function LatestClaims({ claims, isLoading }: LatestClaimsProps) {
             </TableHeader>
             <TableBody>
               {claims.map((claim) => {
-                const statusProps = getStatusProps(claim.status_pengajuan);
+                const statusProps = getStatusProps(claim.status_proses);
 
                 return (
                   <TableRow key={claim.id}>
                     <TableCell>
                       <div>
-                        <div className="font-medium">{claim.nama_meninggal}</div>
+                        <div className="font-medium">{claim.nama_anggota}</div>
                         <div className="text-xs text-muted-foreground font-mono">
-                          {claim.nikap_meninggal}
+                          {claim.status_anggota} - {claim.status_mps}
                         </div>
                       </div>
                     </TableCell>
@@ -142,14 +138,14 @@ export function LatestClaims({ claims, isLoading }: LatestClaimsProps) {
                           <span>{claim.nama_ahli_waris}</span>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {claim.hubungan_ahli_waris}
+                          {claim.status_ahli_waris}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1 text-green-600 font-semibold">
                         <DollarSign className="h-4 w-4" />
-                        <span>{formatCurrency(claim.jumlah_uang_duka)}</span>
+                        <span>{formatCurrency(claim.besaran_dana_kematian)}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -166,7 +162,7 @@ export function LatestClaims({ claims, isLoading }: LatestClaimsProps) {
                     </TableCell>
                     <TableCell>
                       <div className="text-xs text-muted-foreground">
-                        {formatDate(claim.tanggal_pengajuan)}
+                        {formatDate(claim.tanggal_lapor_keluarga || claim.created_at)}
                       </div>
                     </TableCell>
                   </TableRow>
