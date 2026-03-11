@@ -56,7 +56,7 @@ export async function sendEmail({
     to,
     subject,
     text,
-    html: html || emailHtml,
+    html: html || undefined,
   };
 
   try {

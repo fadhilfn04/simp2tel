@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import { JSX, useCallback } from 'react';
 import Link from 'next/link';
@@ -208,4 +207,13 @@ export function MegaMenuMobile() {
   const buildMenuHeading = (item: MenuItem, index: number): JSX.Element => {
     return <AccordionMenuLabel key={index}>{item.heading}</AccordionMenuLabel>;
   };
+
+  return (
+    <AccordionMenu type="single" collapsible classNames={classNames}>
+      {buildMenu(extrasMenu)}
+    </AccordionMenu>
+  );
 }
+
+// Default menu configuration - you can customize this
+const extrasMenu: MenuConfig = [];

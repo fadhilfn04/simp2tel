@@ -44,12 +44,12 @@ export function DeleteConfirmDialog({
           {claim && (
             <div className="bg-muted/50 rounded-lg p-4 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Nama Meninggal</span>
-                <span className="font-medium">{claim.nama_meninggal}</span>
+                <span className="text-sm text-muted-foreground">Nama Anggota</span>
+                <span className="font-medium">{claim.nama_anggota}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">NIKAP</span>
-                <span className="font-mono text-sm">{claim.nikap_meninggal}</span>
+                <span className="text-sm text-muted-foreground">Tanggal Meninggal</span>
+                <span className="font-mono text-sm">{claim.tanggal_meninggal}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Ahli Waris</span>
@@ -57,7 +57,7 @@ export function DeleteConfirmDialog({
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Status</span>
-                <span className="text-sm">{claim.status_pengajuan}</span>
+                <span className="text-sm">{claim.status_proses}</span>
               </div>
             </div>
           )}

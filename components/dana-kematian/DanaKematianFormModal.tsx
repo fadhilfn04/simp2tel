@@ -440,42 +440,42 @@ export function DanaKematianFormModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FileUpload
                   label="File SK Pensiun"
-                  value={formData.file_sk_pensiun}
+                  value={formData.file_sk_pensiun || ''}
                   onChange={(url) => setFormData({ ...formData, file_sk_pensiun: url })}
                   folder="sk-pensiun"
                   disabled={isPending}
                 />
                 <FileUpload
                   label="File Surat Kematian"
-                  value={formData.file_surat_kematian}
+                  value={formData.file_surat_kematian || ''}
                   onChange={(url) => setFormData({ ...formData, file_surat_kematian: url })}
                   folder="surat-kematian"
                   disabled={isPending}
                 />
                 <FileUpload
                   label="File Surat Pernyataan Ahli Waris"
-                  value={formData.file_surat_pernyataan_ahli_waris}
+                  value={formData.file_surat_pernyataan_ahli_waris || ''}
                   onChange={(url) => setFormData({ ...formData, file_surat_pernyataan_ahli_waris: url })}
                   folder="surat-pernyataan-ahli-waris"
                   disabled={isPending}
                 />
                 <FileUpload
                   label="File Kartu Keluarga"
-                  value={formData.file_kartu_keluarga}
+                  value={formData.file_kartu_keluarga || ''}
                   onChange={(url) => setFormData({ ...formData, file_kartu_keluarga: url })}
                   folder="kartu-keluarga"
                   disabled={isPending}
                 />
                 <FileUpload
                   label="File E-KTP"
-                  value={formData.file_e_ktp}
+                  value={formData.file_e_ktp || ''}
                   onChange={(url) => setFormData({ ...formData, file_e_ktp: url })}
                   folder="e-ktp"
                   disabled={isPending}
                 />
                 <FileUpload
                   label="File Surat Nikah"
-                  value={formData.file_surat_nikah}
+                  value={formData.file_surat_nikah || ''}
                   onChange={(url) => setFormData({ ...formData, file_surat_nikah: url })}
                   folder="surat-nikah"
                   disabled={isPending}

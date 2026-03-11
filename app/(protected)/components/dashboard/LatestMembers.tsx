@@ -19,15 +19,15 @@ interface LatestMembersProps {
 }
 
 export function LatestMembers({ members, isLoading }: LatestMembersProps) {
-  const getStatusProps = (status: Anggota['status_anggota']) => {
+  const getStatusProps = (status: string) => {
     switch (status) {
-      case 'Aktif':
+      case 'aktif':
         return { variant: 'success' as const, label: 'Aktif' };
-      case 'Non-Aktif':
+      case 'non-aktif':
         return { variant: 'destructive' as const, label: 'Non-Aktif' };
-      case 'Meninggal':
+      case 'meninggal':
         return { variant: 'destructive' as const, label: 'Meninggal' };
-      case 'Pindah':
+      case 'pindah':
         return { variant: 'warning' as const, label: 'Pindah' };
       default:
         return { variant: 'secondary' as const, label: status };
@@ -109,7 +109,8 @@ export function LatestMembers({ members, isLoading }: LatestMembersProps) {
             </TableHeader>
             <TableBody>
               {members.map((member) => {
-                const statusProps = getStatusProps(member.status_anggota);
+                // @ts-ignore - status_keanggotaan exists in database but not in TypeScript interface
+                const statusProps = getStatusProps(member.status_keanggotaan || 'non-aktif');
 
                 return (
                   <TableRow key={member.id}>

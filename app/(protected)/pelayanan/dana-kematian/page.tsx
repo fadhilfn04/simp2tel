@@ -567,7 +567,7 @@ export default function DanaKematianPage() {
           setEditClaimId(null);
         }}
         onSubmit={handleUpdate}
-        claim={editClaimData}
+        claim={editClaimData as any}
         mode="edit"
         isPending={updateMutation.isPending}
         members={[]}

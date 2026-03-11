@@ -293,11 +293,218 @@ export interface UpdateDanaSosialInput extends Partial<CreateDanaSosialInput> {
 
 export interface DanaSosialFilter {
   search?: string;
-  jenis_bantuan?: JenisBantuan;
-  status_pengajuan?: StatusPengajuanSosial;
-  status_penyaluran?: StatusPenyaluran;
+  jenis_bantuan?: JenisBantuan | 'all';
+  status_pengajuan?: StatusPengajuanSosial | 'all';
+  status_penyaluran?: StatusPenyaluran | 'all';
   tanggal_pengajuan_from?: string;
   tanggal_pengajuan_to?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Contribution payment types
+export type StatusPembayaranEnum = 'pending' | 'paid' | 'failed';
+export type TipeSumbanganEnum = 'sumbangan_bulanan' | 'sumbangan_kematian' | 'sumbangan_khusus' | 'sumbangan_investasi' | 'sumbangan_lainnya';
+
+export interface PembayaranSumbangan {
+  id: string;
+  anggota_id: string | null;
+  nama_anggota: string;
+  nik: string | null;
+  tanggal_transaksi: string;
+  jumlah_pembayaran: number;
+  tipe_sumbangan: TipeSumbanganEnum;
+  status_pembayaran: StatusPembayaranEnum;
+  nomor_referensi: string | null;
+  keterangan_pembayaran: string | null;
+  metode_pembayaran: string | null;
+  bukti_pembayaran: string | null;
+  tanggal_verifikasi: string | null;
+  diverifikasi_oleh: string | null;
+  catatan_verifikasi: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface CreatePembayaranSumbanganInput {
+  anggota_id?: string;
+  nama_anggota: string;
+  nik?: string;
+  tanggal_transaksi: string;
+  jumlah_pembayaran: number;
+  tipe_sumbangan: TipeSumbanganEnum;
+  status_pembayaran?: StatusPembayaranEnum;
+  nomor_referensi?: string;
+  keterangan_pembayaran?: string;
+  metode_pembayaran?: string;
+  bukti_pembayaran?: string;
+  tanggal_verifikasi?: string;
+  diverifikasi_oleh?: string;
+  catatan_verifikasi?: string;
+}
+
+export interface UpdatePembayaranSumbanganInput extends Partial<CreatePembayaranSumbanganInput> {}
+
+export interface PembayaranSumbanganFilter {
+  search?: string;
+  status_pembayaran?: StatusPembayaranEnum;
+  tipe_sumbangan?: TipeSumbanganEnum;
+  tanggal_transaksi_from?: string;
+  tanggal_transaksi_to?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Cash flow types
+export type JenisTransaksiEnum = 'masuk' | 'keluar';
+export type KategoriTransaksiEnum = 'sumbangan_anggota' | 'dana_kematian' | 'dana_sosial' | 'iuran_bulanan' | 'pendapatan_investasi' | 'pendapatan_jasa' | 'pendapatan_lainnya' | 'klaim_kematian' | 'bantuan_sosial' | 'operasional' | 'gaji_dan_tunjangan' | 'biaya_administrasi' | 'biaya_pemasaran' | 'penyusutan' | 'pengeluaran_lainnya';
+
+export interface ArusKas {
+  id: string;
+  tanggal_transaksi: string;
+  jenis_transaksi: JenisTransaksiEnum;
+  kategori_transaksi: KategoriTransaksiEnum;
+  jumlah_transaksi: number;
+  deskripsi: string;
+  nomor_referensi: string | null;
+  anggota_id: string | null;
+  dana_kematian_id: string | null;
+  dana_sosial_id: string | null;
+  pembayaran_sumbangan_id: string | null;
+  saldo_awal: number | null;
+  saldo_akhir: number | null;
+  metode_pembayaran: string | null;
+  akun_bank: string | null;
+  bukti_transaksi: string | null;
+  catatan: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface CreateArusKasInput {
+  tanggal_transaksi: string;
+  jenis_transaksi: JenisTransaksiEnum;
+  kategori_transaksi: KategoriTransaksiEnum;
+  jumlah_transaksi: number;
+  deskripsi: string;
+  nomor_referensi?: string;
+  anggota_id?: string;
+  dana_kematian_id?: string;
+  dana_sosial_id?: string;
+  pembayaran_sumbangan_id?: string;
+  saldo_awal?: number;
+  saldo_akhir?: number;
+  metode_pembayaran?: string;
+  akun_bank?: string;
+  bukti_transaksi?: string;
+  catatan?: string;
+}
+
+export interface UpdateArusKasInput extends Partial<CreateArusKasInput> {}
+
+export interface ArusKasFilter {
+  search?: string;
+  jenis_transaksi?: JenisTransaksiEnum;
+  kategori_transaksi?: KategoriTransaksiEnum;
+  tanggal_transaksi_from?: string;
+  tanggal_transaksi_to?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Period report types
+export type TipeLaporanEnum = 'harian' | 'bulanan' | 'tahunan';
+export type StatusLaporanEnum = 'draft' | 'generated' | 'verified' | 'approved';
+
+export interface LaporanPeriode {
+  id: string;
+  tipe_laporan: TipeLaporanEnum;
+  tanggal_mulai: string;
+  tanggal_selesai: string;
+  total_pendapatan: number;
+  sumbangan_anggota: number;
+  dana_kematian: number;
+  dana_sosial: number;
+  pendapatan_investasi: number;
+  pendapatan_jasa: number;
+  pendapatan_lainnya: number;
+  total_pengeluaran: number;
+  klaim_kematian: number;
+  bantuan_sosial: number;
+  operasional: number;
+  gaji_dan_tunjangan: number;
+  biaya_administrasi: number;
+  biaya_pemasaran: number;
+  penyusutan: number;
+  pengeluaran_lainnya: number;
+  laba_bersih: number;
+  marjin_laba: number | null;
+  kas_masuk: number;
+  kas_keluar: number;
+  arus_kas_bersih: number;
+  total_aset: number;
+  total_kewajiban: number;
+  total_ekuitas: number;
+  jumlah_transaksi: number;
+  jumlah_anggota: number;
+  status_laporan: StatusLaporanEnum;
+  catatan: string | null;
+  dibuat_olez: string | null;
+  diverifikasi_oleh: string | null;
+  tanggal_disetujui: string | null;
+  file_laporan: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface CreateLaporanPeriodeInput {
+  tipe_laporan: TipeLaporanEnum;
+  tanggal_mulai: string;
+  tanggal_selesai: string;
+  total_pendapatan: number;
+  sumbangan_anggota?: number;
+  dana_kematian?: number;
+  dana_sosial?: number;
+  pendapatan_investasi?: number;
+  pendapatan_jasa?: number;
+  pendapatan_lainnya?: number;
+  total_pengeluaran: number;
+  klaim_kematian?: number;
+  bantuan_sosial?: number;
+  operasional?: number;
+  gaji_dan_tunjangan?: number;
+  biaya_administrasi?: number;
+  biaya_pemasaran?: number;
+  penyusutan?: number;
+  pengeluaran_lainnya?: number;
+  laba_bersih: number;
+  marjin_laba?: number;
+  kas_masuk?: number;
+  kas_keluar?: number;
+  arus_kas_bersih?: number;
+  total_aset?: number;
+  total_kewajiban?: number;
+  total_ekuitas?: number;
+  jumlah_transaksi?: number;
+  jumlah_anggota?: number;
+  status_laporan?: StatusLaporanEnum;
+  catatan?: string;
+  dibuat_olez?: string;
+  diverifikasi_oleh?: string;
+  tanggal_disetujui?: string;
+  file_laporan?: string;
+}
+
+export interface UpdateLaporanPeriodeInput extends Partial<CreateLaporanPeriodeInput> {}
+
+export interface LaporanPeriodeFilter {
+  tipe_laporan?: TipeLaporanEnum;
+  status_laporan?: StatusLaporanEnum;
+  year?: string;
+  month?: string;
   page?: number;
   limit?: number;
 }

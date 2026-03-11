@@ -51,7 +51,19 @@ export function DanaSosialFormModal({
     watch,
     setValue,
   } = useForm<CreateDanaSosialInput>({
-    defaultValues: claim || {
+    defaultValues: (claim ? {
+      ...claim,
+      anggota_id: claim.anggota_id || undefined,
+      nikap_pemohon: claim.nikap_pemohon || undefined,
+      catatan_review: claim.catatan_review || undefined,
+      disetujui_oleh: claim.disetujui_oleh || undefined,
+      tanggal_disetujui: claim.tanggal_disetujui || undefined,
+      tanggal_penyaluran: claim.tanggal_penyaluran || undefined,
+      metode_penyaluran: claim.metode_penyaluran || undefined,
+      nama_penerima_dana: claim.nama_penerima_dana || undefined,
+      rekening_tujuan: claim.rekening_tujuan || undefined,
+      bukti_penyaluran: claim.bukti_penyaluran || undefined,
+    } : {
       nama_pemohon: '',
       nikap_pemohon: '',
       hubungan_pemohon: '',
@@ -61,7 +73,7 @@ export function DanaSosialFormModal({
       jumlah_diajukan: 0,
       status_pengajuan: 'Pending',
       status_penyaluran: 'Belum Disalurkan',
-    },
+    }) as CreateDanaSosialInput,
   });
 
   // Auto-populate member data when a member is selected (create mode only)
@@ -69,9 +81,9 @@ export function DanaSosialFormModal({
     if (mode === 'create' && selectedMemberId) {
       const member = members.find((m) => m.id === selectedMemberId);
       if (member) {
-        setValue('nama_pemohon', member.nama);
-        setValue('nikap_pemohon', member.nikap);
-        setValue('no_telepon', member.nomor_kontak);
+        setValue('nama_pemohon', member.nama_anggota);
+        setValue('nikap_pemohon', member.nik);
+        setValue('no_telepon', member.nomor_handphone || member.nomor_telepon || '');
       }
     }
   }, [selectedMemberId, mode, members, setValue]);
@@ -79,7 +91,19 @@ export function DanaSosialFormModal({
   // Reset form when modal opens/closes or claim changes
   useEffect(() => {
     if (open) {
-      reset(claim || {
+      reset((claim ? {
+        ...claim,
+        anggota_id: claim.anggota_id || undefined,
+        nikap_pemohon: claim.nikap_pemohon || undefined,
+        catatan_review: claim.catatan_review || undefined,
+        disetujui_oleh: claim.disetujui_oleh || undefined,
+        tanggal_disetujui: claim.tanggal_disetujui || undefined,
+        tanggal_penyaluran: claim.tanggal_penyaluran || undefined,
+        metode_penyaluran: claim.metode_penyaluran || undefined,
+        nama_penerima_dana: claim.nama_penerima_dana || undefined,
+        rekening_tujuan: claim.rekening_tujuan || undefined,
+        bukti_penyaluran: claim.bukti_penyaluran || undefined,
+      } : {
         nama_pemohon: '',
         nikap_pemohon: '',
         hubungan_pemohon: '',
@@ -89,7 +113,7 @@ export function DanaSosialFormModal({
         jumlah_diajukan: 0,
         status_pengajuan: 'Pending',
         status_penyaluran: 'Belum Disalurkan',
-      });
+      }) as CreateDanaSosialInput);
       if (claim?.anggota_id) {
         setSelectedMemberId(claim.anggota_id);
       } else {
@@ -157,7 +181,7 @@ export function DanaSosialFormModal({
                   <SelectContent>
                     {members.map((member) => (
                       <SelectItem key={member.id} value={member.id}>
-                        {member.nama} - {member.nikap}
+                        {member.nama_anggota} - {member.nik}
                       </SelectItem>
                     ))}
                   </SelectContent>
