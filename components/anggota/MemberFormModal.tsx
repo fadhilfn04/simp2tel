@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { FileUpload } from '@/components/ui/FileUpload';
 import { Anggota, CreateAnggotaInput } from '@/lib/supabase';
 
 interface MemberFormModalProps {
@@ -740,11 +741,13 @@ export function MemberFormModal({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">URL Gambar Kondisi Tempat Tinggal</label>
-                  <Input
-                    placeholder="URL gambar"
-                    value={formData.gambar_kondisi_tempat_tinggal}
-                    onChange={(e) => setFormData({ ...formData, gambar_kondisi_tempat_tinggal: e.target.value })}
+                  <FileUpload
+                    label="Gambar Kondisi Tempat Tinggal"
+                    value={formData.gambar_kondisi_tempat_tinggal || ''}
+                    onChange={(url) => setFormData({ ...formData, gambar_kondisi_tempat_tinggal: url })}
+                    bucket="anggota"
+                    folder="gambar-kondisi-tempat-tinggal"
+                    disabled={isPending}
                   />
                 </div>
               </div>

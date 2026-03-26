@@ -442,6 +442,7 @@ export function DanaKematianFormModal({
                   label="File SK Pensiun"
                   value={formData.file_sk_pensiun || ''}
                   onChange={(url) => setFormData({ ...formData, file_sk_pensiun: url })}
+                  bucket="dana-kematian"
                   folder="sk-pensiun"
                   disabled={isPending}
                 />
@@ -449,6 +450,7 @@ export function DanaKematianFormModal({
                   label="File Surat Kematian"
                   value={formData.file_surat_kematian || ''}
                   onChange={(url) => setFormData({ ...formData, file_surat_kematian: url })}
+                  bucket="dana-kematian"
                   folder="surat-kematian"
                   disabled={isPending}
                 />
@@ -456,6 +458,7 @@ export function DanaKematianFormModal({
                   label="File Surat Pernyataan Ahli Waris"
                   value={formData.file_surat_pernyataan_ahli_waris || ''}
                   onChange={(url) => setFormData({ ...formData, file_surat_pernyataan_ahli_waris: url })}
+                  bucket="dana-kematian"
                   folder="surat-pernyataan-ahli-waris"
                   disabled={isPending}
                 />
@@ -463,6 +466,7 @@ export function DanaKematianFormModal({
                   label="File Kartu Keluarga"
                   value={formData.file_kartu_keluarga || ''}
                   onChange={(url) => setFormData({ ...formData, file_kartu_keluarga: url })}
+                  bucket="dana-kematian"
                   folder="kartu-keluarga"
                   disabled={isPending}
                 />
@@ -470,6 +474,7 @@ export function DanaKematianFormModal({
                   label="File E-KTP"
                   value={formData.file_e_ktp || ''}
                   onChange={(url) => setFormData({ ...formData, file_e_ktp: url })}
+                  bucket="dana-kematian"
                   folder="e-ktp"
                   disabled={isPending}
                 />
@@ -477,6 +482,7 @@ export function DanaKematianFormModal({
                   label="File Surat Nikah"
                   value={formData.file_surat_nikah || ''}
                   onChange={(url) => setFormData({ ...formData, file_surat_nikah: url })}
+                  bucket="dana-kematian"
                   folder="surat-nikah"
                   disabled={isPending}
                 />

@@ -22,6 +22,14 @@ export type DanaKematianFolder =
   | 'e-ktp'
   | 'surat-nikah';
 
+// Folder structure in anggota bucket
+export type AnggotaFolder =
+  | 'gambar-kondisi-tempat-tinggal'
+  | 'e-ktp'
+  | 'kartu-keluarga'
+  | 'npwp'
+  | 'dokumen-lainnya';
+
 // File validation config
 const FILE_CONFIG = {
   maxSize: 5 * 1024 * 1024, // 5MB
@@ -97,7 +105,57 @@ export async function uploadToSupabaseStorage(
   }
 }
 
-export async function deleteFromSupabaseStorage(fileUrl: string): Promise<void> {
+export async function uploadToSupabaseStorageGeneric(
+  file: File,
+  bucket: 'dana-kematian' | 'anggota',
+  folder: string
+): Promise<string> {
+  try {
+    if (!supabaseAdmin) {
+      throw new Error('Supabase admin client not configured. Please set SUPABASE_SERVICE_ROLE_KEY environment variable.');
+    }
+
+    // Validate file
+    const validation = validateFile(file);
+    if (!validation.valid) {
+      throw new Error(validation.error);
+    }
+
+    // Generate unique filename
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const filename = `${timestamp}-${randomString}-${file.name}`;
+    const filePath = `${folder}/${filename}`;
+
+    console.log('Uploading file:', { filename: file.name, size: file.size, bucket, folder, filePath });
+
+    // Upload to Supabase storage using admin client (bypasses RLS)
+    const { data, error } = await supabaseAdmin.storage
+      .from(bucket)
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      console.error('Supabase storage error:', error);
+      throw new Error(error.message);
+    }
+
+    // Get public URL
+    const { data: publicUrlData } = supabaseAdmin.storage
+      .from(bucket)
+      .getPublicUrl(filePath);
+
+    console.log('File uploaded successfully:', { path: filePath, url: publicUrlData.publicUrl });
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error('Upload failed:', error);
+    throw error;
+  }
+}
+
+export async function deleteFromSupabaseStorage(fileUrl: string, bucket: 'dana-kematian' | 'anggota' = 'dana-kematian'): Promise<void> {
   try {
     if (!supabaseAdmin) {
       console.warn('Supabase admin client not configured');
@@ -113,7 +171,7 @@ export async function deleteFromSupabaseStorage(fileUrl: string): Promise<void> 
     // Supabase public URL format: https://xxx.supabase.co/storage/v1/object/public/bucket-name/folder/file.ext
     const url = new URL(fileUrl);
     const pathParts = url.pathname.split('/');
-    const bucketIndex = pathParts.indexOf('dana-kematian');
+    const bucketIndex = pathParts.indexOf(bucket);
 
     if (bucketIndex === -1 || bucketIndex + 1 >= pathParts.length) {
       console.warn('Invalid Supabase storage URL:', fileUrl);
@@ -122,11 +180,11 @@ export async function deleteFromSupabaseStorage(fileUrl: string): Promise<void> 
 
     const filePath = pathParts.slice(bucketIndex + 1).join('/');
 
-    console.log('Deleting file:', { filePath });
+    console.log('Deleting file:', { bucket, filePath });
 
     // Delete from Supabase storage using admin client
     const { error } = await supabaseAdmin.storage
-      .from('dana-kematian')
+      .from(bucket)
       .remove([filePath]);
 
     if (error) {
@@ -134,7 +192,7 @@ export async function deleteFromSupabaseStorage(fileUrl: string): Promise<void> 
       throw new Error(error.message);
     }
 
-    console.log('File deleted successfully:', { path: filePath });
+    console.log('File deleted successfully:', { bucket, path: filePath });
   } catch (error) {
     console.error('Delete failed:', error);
     throw error;

@@ -159,15 +159,29 @@ export default function PengelolaanDataPage() {
     return statusMap[status] || { variant: 'secondary', label: status };
   };
 
+  const getErrorMessage = (error: any) => {
+    return (
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error?.message ||
+      'Terjadi kesalahan'
+    );
+  };
+
   // Event handlers
   const handleCreate = async (data: CreateAnggotaInput) => {
     try {
       await createMutation.mutateAsync(data);
       showToast('Anggota baru berhasil ditambahkan', 'success');
       setAddModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating member:', error);
-      showToast('Gagal menambahkan anggota baru', 'error');
+
+      showToast(
+        `Gagal menambahkan anggota: ${getErrorMessage(error)}`,
+        'error'
+      );
+
       throw error;
     }
   };
@@ -178,9 +192,14 @@ export default function PengelolaanDataPage() {
       showToast('Data anggota berhasil diperbarui', 'success');
       setEditModalOpen(false);
       setEditMemberId(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating member:', error);
-      showToast('Gagal memperbarui data anggota', 'error');
+
+      showToast(
+        `Gagal update anggota: ${getErrorMessage(error)}`,
+        'error'
+      );
+
       throw error;
     }
   };

@@ -1,17 +1,17 @@
 import { useState, useRef } from 'react';
 import { Upload, File, X, Loader2, FileText, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DanaKematianFolder } from '@/lib/supabase-storage';
 
 interface FileUploadProps {
   value: string;
   onChange: (url: string) => void;
-  folder: DanaKematianFolder;
+  bucket: 'dana-kematian' | 'anggota';
+  folder: string;
   label: string;
   disabled?: boolean;
 }
 
-export function FileUpload({ value, onChange, folder, label, disabled = false }: FileUploadProps) {
+export function FileUpload({ value, onChange, bucket, folder, label, disabled = false }: FileUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +41,7 @@ export function FileUpload({ value, onChange, folder, label, disabled = false }:
       // Upload file via API route
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('bucket', bucket);
       formData.append('folder', folder);
 
       const response = await fetch('/api/upload', {
@@ -65,7 +66,7 @@ export function FileUpload({ value, onChange, folder, label, disabled = false }:
       // If there's an existing file, delete it
       if (value) {
         try {
-          await fetch(`/api/upload?url=${encodeURIComponent(value)}`, {
+          await fetch(`/api/upload?url=${encodeURIComponent(value)}&bucket=${bucket}`, {
             method: 'DELETE',
           });
         } catch (error) {
@@ -91,7 +92,7 @@ export function FileUpload({ value, onChange, folder, label, disabled = false }:
     if (!value) return;
 
     try {
-      await fetch(`/api/upload?url=${encodeURIComponent(value)}`, {
+      await fetch(`/api/upload?url=${encodeURIComponent(value)}&bucket=${bucket}`, {
         method: 'DELETE',
       });
 
@@ -157,10 +158,10 @@ export function FileUpload({ value, onChange, folder, label, disabled = false }:
             onChange={handleFileSelect}
             disabled={disabled || uploading}
             className="hidden"
-            id={`file-upload-${folder}`}
+            id={`file-upload-${bucket}-${folder}`}
           />
           <label
-            htmlFor={`file-upload-${folder}`}
+            htmlFor={`file-upload-${bucket}-${folder}`}
             className="cursor-pointer flex flex-col items-center gap-2"
           >
             {uploading ? (
