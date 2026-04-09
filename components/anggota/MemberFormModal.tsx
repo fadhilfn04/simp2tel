@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { FileUpload } from '@/components/ui/FileUpload';
 import { Anggota, CreateAnggotaInput } from '@/lib/supabase';
+import { useWilayah } from '@/hooks/use-wilayah';
 
 interface MemberFormModalProps {
   open: boolean;
@@ -96,6 +97,27 @@ export function MemberFormModal({
 }: MemberFormModalProps) {
   const [formData, setFormData] = useState<CreateAnggotaInput>(defaultFormData);
 
+  // Wilayah hook untuk cascading dropdowns dari Supabase
+  const {
+    provinces,
+    regencies,
+    districts,
+    villages,
+    loadingProvinces,
+    loadingRegencies,
+    loadingDistricts,
+    loadingVillages,
+    fetchRegencies,
+    fetchDistricts,
+    fetchVillages,
+  } = useWilayah();
+
+  // State untuk menyimpan ID wilayah yang dipilih
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string>('');
+  const [selectedRegencyId, setSelectedRegencyId] = useState<string>('');
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string>('');
+  const [selectedVillageId, setSelectedVillageId] = useState<string>('');
+
   // Reset form when modal opens/closes or member data changes
   useEffect(() => {
     if (mode === 'edit' && member) {
@@ -156,6 +178,12 @@ export function MemberFormModal({
     } else {
       setFormData(defaultFormData);
     }
+
+    // Reset wilayah IDs saat form berubah
+    setSelectedProvinceId('');
+    setSelectedRegencyId('');
+    setSelectedDistrictId('');
+    setSelectedVillageId('');
   }, [member, mode, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -577,36 +605,110 @@ export function MemberFormModal({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Kelurahan</label>
-                  <Input
-                    placeholder="Nama kelurahan"
-                    value={formData.kelurahan}
-                    onChange={(e) => setFormData({ ...formData, kelurahan: e.target.value })}
-                  />
+                  <label className="text-sm font-medium">Provinsi</label>
+                  <Select
+                    value={selectedProvinceId}
+                    onValueChange={(value) => {
+                      setSelectedProvinceId(value);
+                      const province = provinces.find((p) => p.id === value);
+                      setFormData({ ...formData, provinsi: province?.name || '' });
+                      // Reset child selections
+                      setSelectedRegencyId('');
+                      setSelectedDistrictId('');
+                      setSelectedVillageId('');
+                      setFormData((prev) => ({ ...prev, kota: '', kecamatan: '', kelurahan: '' }));
+                      fetchRegencies(value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={loadingProvinces ? "Loading..." : "Pilih provinsi"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {provinces.map((province) => (
+                        <SelectItem key={province.id} value={province.id}>
+                          {province.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Kota/Kabupaten</label>
+                  <Select
+                    value={selectedRegencyId}
+                    onValueChange={(value) => {
+                      setSelectedRegencyId(value);
+                      const regency = regencies.find((r) => r.id === value);
+                      setFormData({ ...formData, kota: regency?.name || '' });
+                      // Reset child selections
+                      setSelectedDistrictId('');
+                      setSelectedVillageId('');
+                      setFormData((prev) => ({ ...prev, kecamatan: '', kelurahan: '' }));
+                      fetchDistricts(value);
+                    }}
+                    disabled={!selectedProvinceId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={loadingRegencies ? "Loading..." : "Pilih kota/kabupaten"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {regencies.map((regency) => (
+                        <SelectItem key={regency.id} value={regency.id}>
+                          {regency.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Kecamatan</label>
-                  <Input
-                    placeholder="Nama kecamatan"
-                    value={formData.kecamatan}
-                    onChange={(e) => setFormData({ ...formData, kecamatan: e.target.value })}
-                  />
+                  <Select
+                    value={selectedDistrictId}
+                    onValueChange={(value) => {
+                      setSelectedDistrictId(value);
+                      const district = districts.find((d) => d.id === value);
+                      setFormData({ ...formData, kecamatan: district?.name || '' });
+                      // Reset child selections
+                      setSelectedVillageId('');
+                      setFormData((prev) => ({ ...prev, kelurahan: '' }));
+                      fetchVillages(value);
+                    }}
+                    disabled={!selectedRegencyId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={loadingDistricts ? "Loading..." : "Pilih kecamatan"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {districts.map((district) => (
+                        <SelectItem key={district.id} value={district.id}>
+                          {district.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Kota</label>
-                  <Input
-                    placeholder="Nama kota"
-                    value={formData.kota}
-                    onChange={(e) => setFormData({ ...formData, kota: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Provinsi</label>
-                  <Input
-                    placeholder="Nama provinsi"
-                    value={formData.provinsi}
-                    onChange={(e) => setFormData({ ...formData, provinsi: e.target.value })}
-                  />
+                  <label className="text-sm font-medium">Kelurahan/Desa</label>
+                  <Select
+                    value={selectedVillageId}
+                    onValueChange={(value) => {
+                      setSelectedVillageId(value);
+                      const village = villages.find((v) => v.id === value);
+                      setFormData({ ...formData, kelurahan: village?.name || '' });
+                    }}
+                    disabled={!selectedDistrictId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={loadingVillages ? "Loading..." : "Pilih kelurahan/desa"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {villages.map((village) => (
+                        <SelectItem key={village.id} value={village.id}>
+                          {village.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Kode Pos</label>

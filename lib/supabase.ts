@@ -20,6 +20,38 @@ export type StatusPerkawinanEnum = 'belum_kawin' | 'kawin' | 'cerai_hidup' | 'ce
 export type AgamaEnum = 'islam' | 'kristen' | 'katolik' | 'hindu' | 'buddha' | 'konghucu';
 export type GolonganDarahEnum = 'A' | 'B' | 'AB' | 'O';
 
+// Wilayah tables
+export interface Province {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Regency {
+  id: string;
+  province_id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface District {
+  id: string;
+  regency_id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Village {
+  id: string;
+  district_id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Anggota {
   id: string;
   user_id: string | null;

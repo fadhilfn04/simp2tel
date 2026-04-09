@@ -177,6 +177,10 @@ export default function PengelolaanDataPage() {
     } catch (error: any) {
       console.error('Error creating member:', error);
 
+      // Close modal first so toast is visible
+      setAddModalOpen(false);
+
+      // Show error with actual message from backend
       showToast(
         `Gagal menambahkan anggota: ${getErrorMessage(error)}`,
         'error'
@@ -195,6 +199,11 @@ export default function PengelolaanDataPage() {
     } catch (error: any) {
       console.error('Error updating member:', error);
 
+      // Close modal first so toast is visible
+      setEditModalOpen(false);
+      setEditMemberId(null);
+
+      // Show error with actual message from backend
       showToast(
         `Gagal update anggota: ${getErrorMessage(error)}`,
         'error'
@@ -353,7 +362,7 @@ export default function PengelolaanDataPage() {
             >
               <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            <Button
+            {/* <Button
               mode="icon"
               variant="destructive"
               size="sm"
@@ -365,7 +374,7 @@ export default function PengelolaanDataPage() {
               }}
             >
               <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
+            </Button> */}
           </div>
         ),
       },

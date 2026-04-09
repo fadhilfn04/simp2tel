@@ -112,13 +112,13 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
 
       // Validate required fields
       const validData = mappedData.filter((item: any) => {
-        return item.nik && item.nama_anggota && item.nama_cabang && item.alamat;
+        return item.nik && item.nama_anggota && item.nama_cabang;
       });
 
       const invalidCount = mappedData.length - validData.length;
 
       if (invalidCount > 0) {
-        alert(`${invalidCount} baris dilewati karena field wajib tidak lengkap (NIK, Nama Anggota, Nama Cabang, Alamat)`);
+        alert(`${invalidCount} baris dilewati karena field wajib tidak lengkap (NIK, Nama Anggota, Nama Cabang)`);
       }
 
       setImportPreview(validData);
@@ -339,10 +339,6 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-blue-600" />
                 <span className="text-blue-800 dark:text-blue-200">nama_cabang</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-blue-600" />
-                <span className="text-blue-800 dark:text-blue-200">alamat</span>
               </div>
             </div>
             <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
