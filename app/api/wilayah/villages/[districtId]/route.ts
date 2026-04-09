@@ -4,11 +4,11 @@ const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function GET(
-  request: Request,
-  { params }: { params: { districtId: string } }
+  _request: Request,
+  { params }: { params: Promise<{ districtId: string }> }
 ) {
   try {
-    const { districtId } = params;
+    const { districtId } = await params;
     const now = Date.now();
     const cacheKey = `village-${districtId}`;
 
@@ -49,7 +49,8 @@ export async function GET(
     cache.set(cacheKey, { data, timestamp: now });
     return NextResponse.json(data);
   } catch (error) {
-    const cached = cache.get(`village-${params.districtId}`);
+    const { districtId } = await params;
+    const cached = cache.get(`village-${districtId}`);
     if (cached) return NextResponse.json(cached.data);
 
     return NextResponse.json(
