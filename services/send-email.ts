@@ -25,7 +25,7 @@ export async function sendEmail({
 }: SendEmailProps) {
   const { title, subtitle, description, buttonLabel, buttonUrl } = content;
 
-  // DEV MODE: Log verification URL to console instead of sending email
+  // Log to console for debugging (useful in development)
   if (buttonUrl && buttonUrl.includes('verify-email')) {
     console.log('═══════════════════════════════════════════════════════════');
     console.log('📧 EMAIL VERIFICATION LINK (Development Mode)');
@@ -37,14 +37,19 @@ export async function sendEmail({
     console.log(`\n🔗 Verification Link:`);
     console.log(buttonUrl);
     console.log('═══════════════════════════════════════════════════════════\n');
+  }
+
+  // Check if SMTP is configured
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn('⚠️  SMTP credentials not configured. Email not sent.');
+    console.warn('To enable email sending, configure SMTP_HOST, SMTP_USER, and SMTP_PASS in .env');
     return;
   }
 
-  // For other emails, still try to send (will fail if SMTP not configured)
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 465,
-    secure: true, // true for port 465, false for other ports
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === 'true',
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -61,8 +66,9 @@ export async function sendEmail({
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`Email sent to ${to}`);
+    console.log(`✅ Email sent to ${to}`);
   } catch (error) {
-    console.error(`Error sending email: ${error}`);
+    console.error(`❌ Error sending email: ${error}`);
+    throw error;
   }
 }
