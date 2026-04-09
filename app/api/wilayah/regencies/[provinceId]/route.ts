@@ -5,11 +5,11 @@ const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function GET(
-  request: Request,
-  { params }: { params: { provinceId: string } }
+  _request: Request,
+  { params }: { params: Promise<{ provinceId: string }> }
 ) {
   try {
-    const { provinceId } = params;
+    const { provinceId } = await params;
     const now = Date.now();
     const cacheKey = `regency-${provinceId}`;
 
@@ -62,7 +62,8 @@ export async function GET(
     console.error('Error fetching regencies:', error);
 
     // Try to return stale cache if available
-    const cached = cache.get(`regency-${params.provinceId}`);
+    const { provinceId } = await params;
+    const cached = cache.get(`regency-${provinceId}`);
     if (cached) {
       console.log('Returning stale cache as fallback');
       return NextResponse.json(cached.data);
