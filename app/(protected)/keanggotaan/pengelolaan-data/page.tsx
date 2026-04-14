@@ -135,7 +135,7 @@ export default function PengelolaanDataPage() {
     const statusMap: Record<string, { variant: 'success' | 'destructive' | 'warning' | 'secondary'; label: string }> = {
       pegawai: { variant: 'success', label: 'Pegawai' },
       suami: { variant: 'warning', label: 'Suami' },
-      istri: { variant: 'info', label: 'Istri' },
+      istri: { variant: 'secondary', label: 'Istri' },
       anak: { variant: 'secondary', label: 'Anak' },
       meninggal: { variant: 'destructive', label: 'Meninggal' },
     };
