@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { CreateAnggotaInput, AnggotaFilter } from '@/lib/supabase';
+import { requirePermission, requireAnyPermission, notAuthenticatedResponse, unauthorizedResponse } from '@/lib/rbac-server';
+import { PERMISSIONS } from '@/lib/rbac';
 
 // GET /api/anggota - Get all members with filtering and pagination
 export async function GET(request: NextRequest) {
+    // Check permission - allow access for Keanggotaan, Dana Kematian, or Dana Sosial access
+    await requireAnyPermission([
+      PERMISSIONS.VIEW_KEANGGOTAAN,
+      PERMISSIONS.ACCESS_DANA_KEMATIAN,
+      PERMISSIONS.ACCESS_DANA_SOCIAL,
+    ]);
+
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
@@ -65,10 +74,19 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil((count || 0) / limit),
       },
     });
-  } catch (error) {
-    console.error('Unexpected error in GET /api/anggota:', error);
+  } catch (error: any) {
+    console.error('Error in GET /api/anggota:', error);
+
+    // Handle permission errors
+    if (error.message === 'UNAUTHORIZED') {
+      return notAuthenticatedResponse();
+    }
+    if (error.message === 'FORBIDDEN') {
+      return unauthorizedResponse('Anda tidak memiliki akses untuk melihat data anggota');
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error.message },
       { status: 500 }
     );
   }
@@ -76,6 +94,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/anggota - Create new member
 export async function POST(request: NextRequest) {
+    // Check permission
+    await requirePermission(PERMISSIONS.MANAGE_KEANGGOTAAN);
+
   try {
     const body: CreateAnggotaInput = await request.json();
 
@@ -179,10 +200,19 @@ export async function POST(request: NextRequest) {
       message: 'Anggota berhasil ditambahkan',
     }, { status: 201 });
 
-  } catch (error) {
-    console.error('Unexpected error in POST /api/anggota:', error);
+  } catch (error: any) {
+    console.error('Error in POST /api/anggota:', error);
+
+    // Handle permission errors
+    if (error.message === 'UNAUTHORIZED') {
+      return notAuthenticatedResponse();
+    }
+    if (error.message === 'FORBIDDEN') {
+      return unauthorizedResponse('Anda tidak memiliki akses untuk menambah data anggota');
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error.message },
       { status: 500 }
     );
   }

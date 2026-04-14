@@ -174,6 +174,13 @@ const authOptions: NextAuthOptions = {
         if (user && user.roleId) {
           const role = await prisma.userRole.findUnique({
             where: { id: user.roleId },
+            include: {
+              permissions: {
+                include: {
+                  permission: true,
+                },
+              },
+            },
           });
 
           token.id = (user.id || token.sub) as string;
@@ -182,7 +189,12 @@ const authOptions: NextAuthOptions = {
           token.avatar = user.avatar;
           token.status = user.status;
           token.roleId = user.roleId;
-          token.roleName = role?.name;
+          token.role = role ? {
+            id: role.id,
+            name: role.name,
+            slug: role.slug,
+            permissions: role.permissions,
+          } : undefined;
         }
       }
 
@@ -196,7 +208,7 @@ const authOptions: NextAuthOptions = {
         session.user.avatar = token.avatar;
         session.user.status = token.status;
         session.user.roleId = token.roleId;
-        session.user.roleName = token.roleName;
+        session.user.role = token.role;
       }
       return session;
     },

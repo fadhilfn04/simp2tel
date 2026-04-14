@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useHasPermission } from '@/lib/hooks/use-rbac';
+import { PERMISSIONS } from '@/lib/rbac';
 
 interface LatestSocialProps {
   social: DanaSosial[];
@@ -19,6 +21,7 @@ interface LatestSocialProps {
 }
 
 export function LatestSocial({ social, isLoading }: LatestSocialProps) {
+  const canViewDanaKematian = useHasPermission(PERMISSIONS.ACCESS_DANA_KEMATIAN);
   const getStatusProps = (status: DanaSosial['status_pengajuan']) => {
     switch (status) {
       case 'Pending':
@@ -103,9 +106,11 @@ export function LatestSocial({ social, isLoading }: LatestSocialProps) {
             <Heart className="h-5 w-5 text-pink-600" />
             Dana Sosial Terbaru
           </CardTitle>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/pelayanan/dana-sosial">Lihat Semua</Link>
-          </Button>
+          {canViewDanaKematian && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/pelayanan/dana-sosial">Lihat Semua</Link>
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent>

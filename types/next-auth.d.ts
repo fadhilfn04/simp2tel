@@ -11,6 +11,20 @@ declare module 'next-auth' {
       roleId?: string | null;
       roleName?: string | null;
       status: string;
+      role?: {
+        id: string;
+        name: string;
+        slug: string;
+        permissions?: Array<{
+          permissionId: string;
+          roleId: string;
+          permission: {
+            id: string;
+            slug: string;
+            name: string;
+          };
+        }>;
+      };
     };
   }
 
@@ -33,5 +47,19 @@ declare module 'next-auth/jwt' {
     roleId?: string | null;
     roleName?: string | null;
     status: string;
+    role?: {
+      id: string;
+      name: string;
+      slug: string;
+      permissions?: Array<{
+        permissionId: string;
+        roleId: string;
+        permission: {
+          id: string;
+          slug: string;
+          name: string;
+        };
+      }>;
+    };
   }
 }

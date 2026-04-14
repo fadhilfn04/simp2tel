@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { UpdateAnggotaInput } from '@/lib/supabase';
+import { requirePermission, requireAnyPermission, notAuthenticatedResponse, unauthorizedResponse } from '@/lib/rbac-server';
+import { PERMISSIONS } from '@/lib/rbac';
 
 // GET /api/anggota/[id] - Get single member by ID
 export async function GET(
@@ -8,6 +10,13 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Check permission - allow access for Keanggotaan, Dana Kematian, or Dana Sosial access
+    await requireAnyPermission([
+      PERMISSIONS.VIEW_KEANGGOTAAN,
+      PERMISSIONS.ACCESS_DANA_KEMATIAN,
+      PERMISSIONS.ACCESS_DANA_SOCIAL,
+    ]);
+
     const { id } = await context.params;
     const { data: anggota, error } = await supabase
       .from('anggota')
@@ -24,8 +33,17 @@ export async function GET(
     }
 
     return NextResponse.json({ data: anggota });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/anggota/[id]:', error);
+
+    // Handle permission errors
+    if (error.message === 'UNAUTHORIZED') {
+      return notAuthenticatedResponse();
+    }
+    if (error.message === 'FORBIDDEN') {
+      return unauthorizedResponse('Anda tidak memiliki akses untuk melihat data anggota');
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -39,6 +57,9 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Check permission - require manage permission
+    await requirePermission(PERMISSIONS.MANAGE_KEANGGOTAAN);
+
     const { id } = await context.params;
     const body: UpdateAnggotaInput = await request.json();
 
@@ -135,8 +156,17 @@ export async function PUT(
       message: 'Anggota berhasil diupdate',
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in PUT /api/anggota/[id]:', error);
+
+    // Handle permission errors
+    if (error.message === 'UNAUTHORIZED') {
+      return notAuthenticatedResponse();
+    }
+    if (error.message === 'FORBIDDEN') {
+      return unauthorizedResponse('Anda tidak memiliki akses untuk mengubah data anggota');
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -150,6 +180,9 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Check permission - require manage permission
+    await requirePermission(PERMISSIONS.MANAGE_KEANGGOTAAN);
+
     const { id } = await context.params;
     const { data: existingAnggota } = await supabase
       .from('anggota')
@@ -183,8 +216,17 @@ export async function DELETE(
       message: 'Anggota berhasil dihapus',
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in DELETE /api/anggota/[id]:', error);
+
+    // Handle permission errors
+    if (error.message === 'UNAUTHORIZED') {
+      return notAuthenticatedResponse();
+    }
+    if (error.message === 'FORBIDDEN') {
+      return unauthorizedResponse('Anda tidak memiliki akses untuk menghapus data anggota');
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

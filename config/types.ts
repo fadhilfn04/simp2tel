@@ -14,6 +14,10 @@ export interface MenuItem {
   expandTitle?: string;
   badge?: string;
   separator?: boolean;
+  // RBAC: Permissions required to access this menu
+  permissions?: string[];
+  // RBAC: Roles that can access this menu (alternative to permissions)
+  roles?: string[];
 }
 
 export type MenuConfig = MenuItem[];

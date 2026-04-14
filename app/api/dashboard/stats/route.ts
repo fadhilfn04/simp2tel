@@ -13,14 +13,14 @@ export async function GET() {
     const { count: anggotaAktif } = await supabase
       .from('anggota')
       .select('*', { count: 'exact', head: true })
-      .eq('status_anggota', 'Aktif')
+      .neq('status_anggota', 'meninggal')
       .is('deleted_at', null);
 
     // Get deceased anggota
     const { count: anggotaMeninggal } = await supabase
       .from('anggota')
       .select('*', { count: 'exact', head: true })
-      .eq('status_anggota', 'Meninggal')
+      .eq('status_anggota', 'meninggal')
       .is('deleted_at', null);
 
     // Get total dana kematian claims

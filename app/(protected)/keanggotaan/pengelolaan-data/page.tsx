@@ -7,6 +7,8 @@ import {
   ToolbarHeading,
 } from '@/layouts/demo1/toolbar';
 import { Container } from '@/components/common/container';
+import { ProtectedRoute } from '@/components/rbac/protected-route';
+import { PERMISSIONS } from '@/lib/rbac';
 import {
   ColumnDef,
   flexRender,
@@ -360,7 +362,7 @@ export default function PengelolaanDataPage() {
             >
               <Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
-            {/* <Button
+            <Button
               mode="icon"
               variant="destructive"
               size="sm"
@@ -373,7 +375,7 @@ export default function PengelolaanDataPage() {
               }}
             >
               <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button> */}
+            </Button>
           </div>
         ),
       },
@@ -398,7 +400,8 @@ export default function PengelolaanDataPage() {
   const totalCount = anggotaData?.pagination?.total || 0;
 
   return (
-    <Fragment>
+    <ProtectedRoute permission={PERMISSIONS.VIEW_KEANGGOTAAN}>
+      <Fragment>
       <Container>
         <Toolbar>
           <ToolbarHeading title="Pengelolaan Data" description="Kelola data keanggotaan" />
@@ -680,5 +683,6 @@ export default function PengelolaanDataPage() {
       {/* Toast Notification */}
       <ToastNotification show={toast.show} message={toast.message} type={toast.type} onClose={hideToast} />
     </Fragment>
+    </ProtectedRoute>
   );
 }

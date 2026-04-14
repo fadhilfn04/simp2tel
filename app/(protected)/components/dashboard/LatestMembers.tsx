@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge, BadgeDot } from '@/components/ui/badge';
 import { UserPlus, Mail, Phone, MapPin } from 'lucide-react';
@@ -12,6 +14,8 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useHasPermission } from '@/lib/hooks/use-rbac';
+import { PERMISSIONS } from '@/lib/rbac';
 
 interface LatestMembersProps {
   members: Anggota[];
@@ -19,6 +23,8 @@ interface LatestMembersProps {
 }
 
 export function LatestMembers({ members, isLoading }: LatestMembersProps) {
+  // Check if user has permission to view keanggotaan
+  const canViewKeanggotaan = useHasPermission(PERMISSIONS.VIEW_KEANGGOTAAN);
   const getStatusProps = (status: string) => {
     switch (status) {
       case 'aktif':
@@ -90,9 +96,11 @@ export function LatestMembers({ members, isLoading }: LatestMembersProps) {
             <UserPlus className="h-5 w-5 text-blue-600" />
             Anggota Terbaru
           </CardTitle>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/keanggotaan/pengelolaan-data">Lihat Semua</Link>
-          </Button>
+          {canViewKeanggotaan && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/keanggotaan/pengelolaan-data">Lihat Semua</Link>
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent>
@@ -101,16 +109,15 @@ export function LatestMembers({ members, isLoading }: LatestMembersProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Anggota</TableHead>
-                <TableHead>Kontak</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Alamat</TableHead>
+                <TableHead>Status Anggota</TableHead>
                 <TableHead>Domisili</TableHead>
                 <TableHead>Tanggal Gabung</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {members.map((member) => {
-                // @ts-ignore - status_keanggotaan exists in database but not in TypeScript interface
-                const statusProps = getStatusProps(member.status_keanggotaan || 'non-aktif');
+                const statusProps = getStatusProps(member.status_anggota || 'non-aktif');
 
                 return (
                   <TableRow key={member.id}>
@@ -122,10 +129,10 @@ export function LatestMembers({ members, isLoading }: LatestMembersProps) {
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        {member.email && (
+                        {member.alamat && (
                           <div className="flex items-center gap-1 text-xs">
-                            <Mail className="h-3 w-3 text-muted-foreground" />
-                            <span className="truncate max-w-[150px]">{member.email}</span>
+                            <MapPin className="h-3 w-3 text-muted-foreground" />
+                            <span className="truncate max-w-[150px]">{member.alamat}</span>
                           </div>
                         )}
                         {member.nomor_handphone && (

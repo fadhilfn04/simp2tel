@@ -1,8 +1,9 @@
 'use client';
 
-import { JSX, useCallback } from 'react';
+import { JSX, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { MENU_SIDEBAR } from '@/config/menu.config';
 import { MenuConfig, MenuItem } from '@/config/types';
 import { cn } from '@/lib/utils';
@@ -17,9 +18,58 @@ import {
   AccordionMenuSubTrigger,
 } from '@/components/ui/accordion-menu';
 import { Badge } from '@/components/ui/badge';
+import { filterMenuByPermissions } from '@/lib/rbac';
+import { User } from '@/app/models/user';
 
 export function SidebarMenu() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+
+  // Filter menu based on user permissions
+  const filteredMenu = useMemo(() => {
+    const user = session?.user as User | null;
+
+    if (!user) {
+      // If no user, return empty menu or show only public items
+      return [];
+    }
+
+    // Helper function to recursively filter menu items
+    const filterMenuRecursive = (items: MenuConfig): MenuConfig => {
+      return items
+        .map((item) => {
+          // Check if user has permission for this item
+          const hasAccess = !item.permissions || item.permissions.length === 0 ||
+            item.permissions.some((perm) => {
+              // Administrator has all access
+              if (user.role?.slug === 'administrator') return true;
+              // Check if user has this permission
+              return user.role?.permissions?.some(
+                (rp) => rp.permission?.slug === perm
+              ) ?? false;
+            });
+
+          if (!hasAccess) {
+            return null;
+          }
+
+          // If item has children, filter them too
+          if (item.children) {
+            const filteredChildren = filterMenuRecursive(item.children);
+            // Only show parent if it has at least one accessible child
+            if (filteredChildren.length === 0) {
+              return null;
+            }
+            return { ...item, children: filteredChildren };
+          }
+
+          return item;
+        })
+        .filter((item): item is MenuItem => item !== null);
+    };
+
+    return filterMenuRecursive(MENU_SIDEBAR);
+  }, [session]);
 
   // Memoize matchPath to prevent unnecessary re-renders
   const matchPath = useCallback(
@@ -219,7 +269,7 @@ export function SidebarMenu() {
         collapsible
         classNames={classNames}
       >
-        {buildMenu(MENU_SIDEBAR)}
+        {buildMenu(filteredMenu)}
       </AccordionMenu>
     </div>
   );

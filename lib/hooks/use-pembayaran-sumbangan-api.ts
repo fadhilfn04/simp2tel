@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { PembayaranSumbangan, CreatePembayaranSumbanganInput, UpdatePembayaranSumbanganInput } from '@/lib/supabase';
+import { supabase, PembayaranSumbangan, CreatePembayaranSumbanganInput, UpdatePembayaranSumbanganInput } from '@/lib/supabase';
 
 // API response types
 interface PembayaranSumbanganListResponse {
@@ -22,7 +22,7 @@ interface ApiError {
   details?: string;
 }
 
-// Fetch all contribution payments with filters
+// Fetch all pembayaran sumbangan with filters
 export function usePembayaranSumbanganList(params: {
   search?: string;
   status_pembayaran?: string;
@@ -40,17 +40,13 @@ export function usePembayaranSumbanganList(params: {
   if (params.tipe_sumbangan && params.tipe_sumbangan !== 'all') {
     queryParams.set('tipe_sumbangan', params.tipe_sumbangan);
   }
-  if (params.tanggal_transaksi_from) {
-    queryParams.set('tanggal_transaksi_from', params.tanggal_transaksi_from);
-  }
-  if (params.tanggal_transaksi_to) {
-    queryParams.set('tanggal_transaksi_to', params.tanggal_transaksi_to);
-  }
+  if (params.tanggal_transaksi_from) queryParams.set('tanggal_transaksi_from', params.tanggal_transaksi_from);
+  if (params.tanggal_transaksi_to) queryParams.set('tanggal_transaksi_to', params.tanggal_transaksi_to);
   queryParams.set('page', String(params.page || 1));
   queryParams.set('limit', String(params.limit || 10));
 
   return useQuery({
-    queryKey: ['pembayaranSumbangan', params],
+    queryKey: ['pembayaran-sumbangan', params],
     queryFn: async () => {
       const response = await fetch(`/api/pembayaran-sumbangan?${queryParams.toString()}`);
       if (!response.ok) {
@@ -63,10 +59,10 @@ export function usePembayaranSumbanganList(params: {
   });
 }
 
-// Fetch single contribution payment by ID
+// Fetch single pembayaran sumbangan by ID
 export function usePembayaranSumbangan(id: string) {
   return useQuery({
-    queryKey: ['pembayaranSumbangan', id],
+    queryKey: ['pembayaran-sumbangan', id],
     queryFn: async () => {
       const response = await fetch(`/api/pembayaran-sumbangan/${id}`);
       if (!response.ok) {
@@ -80,7 +76,7 @@ export function usePembayaranSumbangan(id: string) {
   });
 }
 
-// Create new contribution payment
+// Create new pembayaran sumbangan
 export function useCreatePembayaranSumbangan() {
   const queryClient = useQueryClient();
 
@@ -100,12 +96,12 @@ export function useCreatePembayaranSumbangan() {
       return response.json() as Promise<PembayaranSumbanganResponse>;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pembayaranSumbangan'] });
+      queryClient.invalidateQueries({ queryKey: ['pembayaran-sumbangan'] });
     },
   });
 }
 
-// Update contribution payment
+// Update pembayaran sumbangan
 export function useUpdatePembayaranSumbangan(id: string) {
   const queryClient = useQueryClient();
 
@@ -125,13 +121,13 @@ export function useUpdatePembayaranSumbangan(id: string) {
       return response.json() as Promise<PembayaranSumbanganResponse>;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pembayaranSumbangan'] });
-      queryClient.invalidateQueries({ queryKey: ['pembayaranSumbangan', id] });
+      queryClient.invalidateQueries({ queryKey: ['pembayaran-sumbangan'] });
+      queryClient.invalidateQueries({ queryKey: ['pembayaran-sumbangan', id] });
     },
   });
 }
 
-// Delete contribution payment
+// Delete pembayaran sumbangan
 export function useDeletePembayaranSumbangan() {
   const queryClient = useQueryClient();
 
@@ -149,7 +145,36 @@ export function useDeletePembayaranSumbangan() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pembayaranSumbangan'] });
+      queryClient.invalidateQueries({ queryKey: ['pembayaran-sumbangan'] });
+    },
+  });
+}
+
+// Verify payment
+export function useVerifyPembayaran(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { status_pembayaran: 'paid' | 'failed'; diverifikasi_oleh: string; catatan_verifikasi?: string }) => {
+      const response = await fetch(`/api/pembayaran-sumbangan/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          tanggal_verifikasi: new Date().toISOString().split('T')[0],
+        }),
+      });
+
+      if (!response.ok) {
+        const error: ApiError = await response.json();
+        throw new Error(error.error || 'Failed to verify pembayaran');
+      }
+
+      return response.json() as Promise<PembayaranSumbanganResponse>;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pembayaran-sumbangan'] });
+      queryClient.invalidateQueries({ queryKey: ['pembayaran-sumbangan', id] });
     },
   });
 }

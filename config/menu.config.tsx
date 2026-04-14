@@ -53,6 +53,7 @@ import {
   Briefcase as WorkIcon,
   Zap,
 } from 'lucide-react';
+import { PERMISSIONS } from '@/lib/rbac';
 import { type MenuConfig } from './types';
 
 export const MENU_SIDEBAR: MenuConfig = [
@@ -274,58 +275,93 @@ export const MENU_SIDEBAR: MenuConfig = [
   //     { title: 'Error 500', path: '/error/500' },
   //   ],
   // },
-  { heading: 'Apps' },
   {
     title: 'Keanggotaan',
     icon: UserCircle,
+    permissions: [PERMISSIONS.ACCESS_KEANGGOTAAN],
     children: [
-      { title: 'Pengelolaan Data', path: '/keanggotaan/pengelolaan-data' },
+      {
+        title: 'Pengelolaan Data',
+        path: '/keanggotaan/pengelolaan-data',
+        permissions: [PERMISSIONS.VIEW_KEANGGOTAAN],
+      },
     ],
   },
-  // {
-  //   title: 'Pelayanan',
-  //   icon: Briefcase,
-  //   children: [
-  //     { title: 'Dana Kematian', path: '/pelayanan/dana-kematian' },
-  //     { title: 'Dana Sosial', path: '/pelayanan/dana-sosial' },
-  //   ],
-  // },
-  // {
-  //   title: 'Keuangan',
-  //   icon: DollarSign,
-  //   children: [
-  //     { title: 'Laporan Keuangan', path: '/keuangan/laporan-keuangan' },
-  //     { title: 'Mekanisme Iuran', path: '/keuangan/mekanisme-iuran' },
-  //   ],
-  // },
-  // {
-  //   title: 'Surat Elektronik',
-  //   icon: FileText,
-  //   children: [
-  //     { title: 'Surat Elektronik', path: '/surat-elektronik/surat' },
-  //     { title: 'Agenda Surat', path: '/surat-elektronik/agenda-surat' },
-  //   ],
-  // },
+  {
+    title: 'Pelayanan',
+    icon: Briefcase,
+    permissions: [PERMISSIONS.ACCESS_DANA_KEMATIAN, PERMISSIONS.ACCESS_DANA_SOCIAL],
+    children: [
+      {
+        title: 'Dana Kematian',
+        path: '/pelayanan/dana-kematian',
+        permissions: [PERMISSIONS.ACCESS_DANA_KEMATIAN],
+      },
+      {
+        title: 'Dana Sosial',
+        path: '/pelayanan/dana-sosial',
+        permissions: [PERMISSIONS.ACCESS_DANA_SOCIAL],
+      },
+    ],
+  },
+  {
+    title: 'Keuangan',
+    icon: DollarSign,
+    permissions: [PERMISSIONS.ACCESS_KEUANGAN],
+    children: [
+      {
+        title: 'Laporan Keuangan',
+        path: '/keuangan/laporan-keuangan',
+        permissions: [PERMISSIONS.MANAGE_LAPORAN],
+      },
+      {
+        title: 'Mekanisme Iuran',
+        path: '/keuangan/mekanisme-iuran',
+        permissions: [PERMISSIONS.VIEW_IURAN],
+      },
+    ],
+  },
+  {
+    title: 'Surat Elektronik',
+    icon: FileText,
+    permissions: [PERMISSIONS.ACCESS_SURAT],
+    children: [
+      {
+        title: 'Surat Elektronik',
+        path: '/surat-elektronik/surat',
+        permissions: [PERMISSIONS.MANAGE_SURAT],
+      },
+      {
+        title: 'Agenda Surat',
+        path: '/surat-elektronik/agenda-surat',
+        permissions: [PERMISSIONS.MANAGE_SURAT],
+      },
+    ],
+  },
   {
     title: 'Manajemen Pengguna',
     icon: ShieldUser,
+    permissions: [PERMISSIONS.ACCESS_USER_MANAGEMENT],
     children: [
       {
         title: 'Pengguna',
         path: '/user-management/users',
+        permissions: [PERMISSIONS.MANAGE_USERS],
       },
       {
         title: 'Role',
         path: '/user-management/roles',
+        permissions: [PERMISSIONS.MANAGE_ROLES],
       },
       {
         title: 'Hak Akses',
         path: '/user-management/permissions',
+        permissions: [PERMISSIONS.MANAGE_PERMISSIONS],
       },
-      {
-        title: 'Akun',
-        path: '/user-management/account',
-      },
+      // {
+      //   title: 'Akun',
+      //   path: '/user-management/account',
+      // },
       // {
       //   title: 'Logs',
       //   path: '/user-management/logs',
@@ -333,6 +369,7 @@ export const MENU_SIDEBAR: MenuConfig = [
       // {
       //   title: 'Settings',
       //   path: '/user-management/settings',
+      //   permissions: [PERMISSIONS.ACCESS_SETTINGS],
       // },
     ],
   },

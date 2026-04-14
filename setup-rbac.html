@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup RBAC</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        button { background: #0070f3; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0051cc; }
+        .result { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Setup RBAC P2Tel</h1>
+    <p>Klik tombol di bawah untuk setup awal RBAC (permissions & roles):</p>
+
+    <button onclick="setupRBAC()">⚡ Setup RBAC Sekarang</button>
+
+    <div id="result" class="result" style="display:none;"></div>
+
+    <script>
+        async function setupRBAC() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Sedang memproses...';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch('/api/setup-rbac', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <h3>✅ Setup Berhasil!</h3>
+                        <p><strong>Summary:</strong></p>
+                        <ul>
+                            <li>Total Permissions: ${data.summary.totalPermissions}</li>
+                            <li>Permissions Created: ${data.summary.permissionsCreated}</li>
+                            <li>Permissions Already Exist: ${data.summary.permissionsExisting}</li>
+                            <li>Permissions Assigned: ${data.summary.permissionsAssigned}</li>
+                        </ul>
+                        ${data.summary.errors > 0 ? `<p>⚠️ Errors: ${data.summary.errors}</p>` : ''}
+                        <p>💡 Sekarang bisa cek di:</p>
+                        <ul>
+                            <li><a href="/user-management/permissions">/user-management/permissions</a></li>
+                            <li><a href="/user-management/roles">/user-management/roles</a></li>
+                        </ul>
+                    `;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.innerHTML = `<h3>❌ Error</h3><p>${data.error || 'Unknown error'}</p>`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<h3>❌ Error</h3><p>${error.message}</p>`;
+                resultDiv.className = 'result error';
+            }
+        }
+    </script>
+</body>
+</html>

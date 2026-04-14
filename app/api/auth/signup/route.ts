@@ -3,42 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 import prisma from '@/lib/prisma';
 import { verifyRecaptchaToken } from '@/lib/recaptcha';
-import { sendEmail } from '@/services/send-email';
 import {
   getSignupSchema,
   SignupSchemaType,
 } from '@/app/(auth)/forms/signup-schema';
-import { User, UserStatus } from '@/app/models/user';
-
-// Helper function to generate a verification token and send the email.
-async function sendVerificationEmail(user: User) {
-  // Create a new verification token.
-  const token = await prisma.verificationToken.create({
-    data: {
-      identifier: user.id,
-      token: bcrypt.hashSync(user.id, 10),
-      expires: new Date(Date.now() + 1 * 60 * 60 * 1000), // 1 hour from now
-    },
-  });
-
-  // Construct the verification URL.
-  const verificationUrl = `${process.env.NEXTAUTH_URL}/verify-email?token=${token.token}`;
-
-  // Send the verification email.
-  await sendEmail({
-    to: user.email,
-    subject: 'Account Activation',
-    content: {
-      title: `Hello, ${user.name}`,
-      subtitle:
-        'Click the below link to verify your email address and activate your account.',
-      buttonLabel: 'Activate account',
-      buttonUrl: verificationUrl,
-      description:
-        'This link is valid for 1 hour. If you did not request this email you can safely ignore it.',
-    },
-  });
-}
+import { UserStatus } from '@/app/models/user';
 
 export async function POST(req: NextRequest) {
   try {
@@ -79,27 +48,13 @@ export async function POST(req: NextRequest) {
     // Check if a user with the given email already exists.
     const existingUser = await prisma.user.findUnique({
       where: { email },
-      include: { role: true },
     });
 
     if (existingUser) {
-      if (existingUser.status === UserStatus.INACTIVE) {
-        // Resend verification email for inactive user.
-        await prisma.verificationToken.deleteMany({
-          where: { identifier: existingUser.id },
-        });
-        await sendVerificationEmail(existingUser);
-        return NextResponse.json(
-          { message: 'Verification email resent. Please check your email.' },
-          { status: 200 },
-        );
-      } else {
-        // User exists and is active.
-        return NextResponse.json(
-          { message: 'Email is already registered.' },
-          { status: 409 },
-        );
-      }
+      return NextResponse.json(
+        { message: 'Email is already registered.' },
+        { status: 409 },
+      );
     }
 
     const defaultRole = await prisma.userRole.findFirst({
@@ -113,29 +68,33 @@ export async function POST(req: NextRequest) {
     // Hash the password.
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user with INACTIVE status.
+    // Create a new user with ACTIVE status (email verification disabled).
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
-        status: UserStatus.INACTIVE,
+        status: UserStatus.ACTIVE,
         roleId: defaultRole.id,
+        emailVerifiedAt: new Date(), // Auto-verify email
       },
       include: { role: true },
     });
 
-    // Send the verification email.
-    await sendVerificationEmail(user);
-
     return NextResponse.json(
       {
-        message:
-          'Registration successful. Check your email to verify your account.',
+        message: 'Registration successful. You can now sign in.',
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          roleName: user.role.name,
+        },
       },
-      { status: 200 },
+      { status: 201 },
     );
-  } catch {
+  } catch (error) {
+    console.error('Signup error:', error);
     return NextResponse.json(
       { message: 'Registration failed. Please try again later.' },
       { status: 500 },
