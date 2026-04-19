@@ -22,6 +22,53 @@ interface ApiError {
   details?: string;
 }
 
+// Direct fetch function (not a hook) for export functionality
+export async function fetchAnggotaList(params: {
+  search?: string;
+  kategori_anggota?: string;
+  status_anggota?: string;
+  status_mps?: string;
+  status_iuran?: string;
+  nama_cabang?: string;
+  page?: number;
+  limit?: number;
+  sortColumn?: string;
+  sortDirection?: 'asc' | 'desc';
+}): Promise<AnggotaListResponse> {
+  const queryParams = new URLSearchParams();
+  if (params.search) queryParams.set('search', params.search);
+  if (params.kategori_anggota && params.kategori_anggota !== 'all') {
+    queryParams.set('kategori_anggota', params.kategori_anggota);
+  }
+  if (params.status_anggota && params.status_anggota !== 'all') {
+    queryParams.set('status_anggota', params.status_anggota);
+  }
+  if (params.status_mps && params.status_mps !== 'all') {
+    queryParams.set('status_mps', params.status_mps);
+  }
+  if (params.status_iuran && params.status_iuran !== 'all') {
+    queryParams.set('status_iuran', params.status_iuran);
+  }
+  if (params.nama_cabang && params.nama_cabang !== 'all') {
+    queryParams.set('nama_cabang', params.nama_cabang);
+  }
+  queryParams.set('page', String(params.page || 1));
+  queryParams.set('limit', String(params.limit || 10));
+  if (params.sortColumn) {
+    queryParams.set('sortColumn', params.sortColumn);
+  }
+  if (params.sortDirection) {
+    queryParams.set('sortDirection', params.sortDirection);
+  }
+
+  const response = await fetch(`/api/anggota?${queryParams.toString()}`);
+  if (!response.ok) {
+    const error: ApiError = await response.json();
+    throw new Error(error.error || 'Failed to fetch anggota');
+  }
+  return response.json() as Promise<AnggotaListResponse>;
+}
+
 // Fetch all anggota with filters
 export function useAnggotaList(params: {
   search?: string;

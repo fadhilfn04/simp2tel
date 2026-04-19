@@ -214,6 +214,7 @@ export interface DanaKematian {
   file_surat_nikah: string | null;
   status_proses: StatusProsesDakemEnum;
   keterangan: string | null;
+  data_perubahan: Record<string, any> | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;

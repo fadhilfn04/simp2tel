@@ -137,6 +137,12 @@ export async function POST(request: NextRequest) {
         file_surat_nikah: body.file_surat_nikah || null,
         status_proses: body.status_proses || 'dilaporkan',
         keterangan: body.keterangan || null,
+        data_perubahan: {
+          actor_id: null,
+          actor_role: 'cabang',
+          actor_nama: 'System',
+          catatan: 'Pembuatan baru'
+        }
       }])
       .select()
       .single();

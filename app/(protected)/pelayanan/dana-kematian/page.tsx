@@ -53,6 +53,7 @@ import {
   useCreateDanaKematian,
   useDeleteDanaKematian,
   useUpdateDanaKematian,
+  useDanaKematian,
 } from '@/lib/hooks/use-dana-kematian-api';
 import { DanaKematian, CreateDanaKematianInput } from '@/lib/supabase';
 import {
@@ -109,7 +110,7 @@ export default function DanaKematianPage() {
     limit: 1000,
   });
 
-  const { data: editClaimData } = useUpdateDanaKematian(editClaimId || '');
+  const { data: editClaimData } = useDanaKematian(editClaimId || '');
   const createMutation = useCreateDanaKematian();
   const updateMutation = useUpdateDanaKematian(editClaimId || '');
   const deleteMutation = useDeleteDanaKematian();

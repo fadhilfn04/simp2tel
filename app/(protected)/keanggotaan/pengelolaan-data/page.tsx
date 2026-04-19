@@ -64,6 +64,7 @@ import { MemberFormModal } from '@/components/anggota/MemberFormModal';
 import { DetailModal } from '@/components/anggota/DetailModal';
 import { DeleteConfirmDialog } from '@/components/anggota/DeleteConfirmDialog';
 import { ImportExcelModal } from '@/components/anggota/ImportExcelModal';
+import { ExportExcelModal } from '@/components/anggota/ExportExcelModal';
 import { ToastNotification } from '@/components/anggota/ToastNotification';
 import { ExpandableRow } from '@/components/anggota/ExpandableRow';
 
@@ -90,6 +91,7 @@ export default function PengelolaanDataPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<Anggota | null>(null);
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   // Toast state
   const [toast, setToast] = useState<{
@@ -283,6 +285,32 @@ export default function PengelolaanDataPage() {
     }
 
     return { success: successCount, error: errorCount };
+  };
+
+  const handleFetchAllData = async (limit?: number) => {
+    try {
+      // Import the fetch function dynamically
+      const { fetchAnggotaList } = await import('@/lib/hooks/use-anggota-api');
+
+      const result = await fetchAnggotaList({
+        search: searchQuery,
+        kategori_anggota: selectedKategori,
+        status_anggota: selectedStatus,
+        status_mps: selectedMps,
+        status_iuran: selectedIuran,
+        nama_cabang: selectedCabang,
+        page: 1,
+        limit: limit || 10000, // Default large number for "all" data
+        sortColumn,
+        sortDirection,
+      });
+
+      return result.data || [];
+    } catch (error) {
+      console.error('Error fetching all data:', error);
+      showToast('Gagal mengambil data untuk export. Silakan coba lagi.', 'error');
+      return [];
+    }
   };
 
   // Table columns
@@ -482,118 +510,130 @@ export default function PengelolaanDataPage() {
         <Card className="flex flex-col overflow-hidden">
           {/* Sticky Header Section */}
           <div className="shrink-0 border-b">
-            <CardHeader className="flex-col flex-wrap sm:flex-row items-stretch sm:items-center py-5">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 w-full">
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-                  {/* Search */}
-                  <div className="relative">
-                    <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
-                    <Input
-                      placeholder="Cari nama, NIK, atau cabang..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="ps-9 w-full sm:w-64"
-                    />
-                    {searchQuery.length > 0 && (
-                      <Button
-                        mode="icon"
-                        variant="dim"
-                        className="absolute end-1.5 top-1/2 -translate-y-1/2 h-6 w-6"
-                        onClick={() => setSearchQuery('')}
-                      >
-                        ×
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Filters */}
-                  <Select
-                    onValueChange={(value) => {
-                      setSelectedKategori(value);
-                      setPagination({ ...pagination, pageIndex: 0 });
-                    }}
-                    value={selectedKategori}
-                  >
-                    <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Kategori" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua Kategori</SelectItem>
-                      <SelectItem value="biasa">Biasa</SelectItem>
-                      <SelectItem value="luar_biasa">Luar Biasa</SelectItem>
-                      <SelectItem value="kehormatan">Kehormatan</SelectItem>
-                      <SelectItem value="bukan_anggota">Bukan Anggota</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    onValueChange={(value) => {
-                      setSelectedStatus(value);
-                      setPagination({ ...pagination, pageIndex: 0 });
-                    }}
-                    value={selectedStatus}
-                  >
-                    <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua Status</SelectItem>
-                      <SelectItem value="pegawai">Pegawai</SelectItem>
-                      <SelectItem value="istri">Istri</SelectItem>
-                      <SelectItem value="suami">Suami</SelectItem>
-                      <SelectItem value="anak">Anak</SelectItem>
-                      <SelectItem value="meninggal">Meninggal</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    onValueChange={(value) => {
-                      setSelectedMps(value);
-                      setPagination({ ...pagination, pageIndex: 0 });
-                    }}
-                    value={selectedMps}
-                  >
-                    <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Status MPS" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua MPS</SelectItem>
-                      <SelectItem value="mps">MPS</SelectItem>
-                      <SelectItem value="non_mps">Non-MPS</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    onValueChange={(value) => {
-                      setSelectedIuran(value);
-                      setPagination({ ...pagination, pageIndex: 0 });
-                    }}
-                    value={selectedIuran}
-                  >
-                    <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Status Iuran" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua Iuran</SelectItem>
-                      <SelectItem value="iuran">Sudah Iuran</SelectItem>
-                      <SelectItem value="tidak_iuran">Tidak Iuran</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <CardHeader className="flex-col flex-wrap sm:flex-row items-stretch sm:items-center py-5 gap-4">
+              {/* Search & Filters Section */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
+                  <Input
+                    placeholder="Cari nama, NIK, atau cabang..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="ps-9 w-full sm:w-64"
+                  />
+                  {searchQuery.length > 0 && (
+                    <Button
+                      mode="icon"
+                      variant="dim"
+                      className="absolute end-1.5 top-1/2 -translate-y-1/2 h-6 w-6"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      ×
+                    </Button>
+                  )}
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <Button variant="outline" onClick={() => setImportModalOpen(true)} className="flex-1 sm:flex-none">
-                    <FileSpreadsheet className="h-4 w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Import Excel</span>
-                    <span className="sm:hidden">Import</span>
-                  </Button>
-                  <Button onClick={() => setAddModalOpen(true)} className="flex-1 sm:flex-none">
-                    <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline ml-1">Tambah Anggota</span>
-                    <span className="sm:hidden ml-1">Tambah</span>
-                  </Button>
-                </div>
+                {/* Filters */}
+                {/* <Select
+                  onValueChange={(value) => {
+                    setSelectedKategori(value);
+                    setPagination({ ...pagination, pageIndex: 0 });
+                  }}
+                  value={selectedKategori}
+                >
+                  <SelectTrigger className="w-full sm:w-36">
+                    <SelectValue placeholder="Kategori" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Kategori</SelectItem>
+                    <SelectItem value="biasa">Biasa</SelectItem>
+                    <SelectItem value="luar_biasa">Luar Biasa</SelectItem>
+                    <SelectItem value="kehormatan">Kehormatan</SelectItem>
+                    <SelectItem value="bukan_anggota">Bukan Anggota</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  onValueChange={(value) => {
+                    setSelectedStatus(value);
+                    setPagination({ ...pagination, pageIndex: 0 });
+                  }}
+                  value={selectedStatus}
+                >
+                  <SelectTrigger className="w-full sm:w-36">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Status</SelectItem>
+                    <SelectItem value="pegawai">Pegawai</SelectItem>
+                    <SelectItem value="istri">Istri</SelectItem>
+                    <SelectItem value="suami">Suami</SelectItem>
+                    <SelectItem value="anak">Anak</SelectItem>
+                    <SelectItem value="meninggal">Meninggal</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  onValueChange={(value) => {
+                    setSelectedMps(value);
+                    setPagination({ ...pagination, pageIndex: 0 });
+                  }}
+                  value={selectedMps}
+                >
+                  <SelectTrigger className="w-full sm:w-36">
+                    <SelectValue placeholder="Status MPS" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua MPS</SelectItem>
+                    <SelectItem value="mps">MPS</SelectItem>
+                    <SelectItem value="non_mps">Non-MPS</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  onValueChange={(value) => {
+                    setSelectedIuran(value);
+                    setPagination({ ...pagination, pageIndex: 0 });
+                  }}
+                  value={selectedIuran}
+                >
+                  <SelectTrigger className="w-full sm:w-36">
+                    <SelectValue placeholder="Status Iuran" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Iuran</SelectItem>
+                    <SelectItem value="iuran">Sudah Iuran</SelectItem>
+                    <SelectItem value="tidak_iuran">Tidak Iuran</SelectItem>
+                  </SelectContent>
+                </Select> */}
+
+                <Button
+                  variant="outline"
+                  onClick={() => setExportModalOpen(true)}
+                  className="w-full sm:w-auto"
+                  disabled={!anggotaData?.data || anggotaData.data.length === 0}
+                >
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Export</span>
+                  <span className="sm:hidden">Export Excel</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setImportModalOpen(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Import</span>
+                  <span className="sm:hidden">Import Excel</span>
+                </Button>
+                <Button
+                  onClick={() => setAddModalOpen(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  <span>Tambah Anggota</span>
+                </Button>
               </div>
             </CardHeader>
           </div>
@@ -769,6 +809,13 @@ export default function PengelolaanDataPage() {
         isPending={deleteMutation.isPending}
       />
       <ImportExcelModal open={importModalOpen} onClose={() => setImportModalOpen(false)} onImport={handleImport} />
+      <ExportExcelModal
+        open={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        data={anggotaData?.data || []}
+        totalCount={anggotaData?.pagination?.total}
+        onFetchAllData={handleFetchAllData}
+      />
 
       {/* Toast Notification */}
       <ToastNotification show={toast.show} message={toast.message} type={toast.type} onClose={hideToast} />

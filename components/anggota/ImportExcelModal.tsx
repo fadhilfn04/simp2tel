@@ -265,15 +265,222 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
         { wch: 10 }, { wch: 15 },
       ];
 
+      // Create guide sheet with detailed instructions
+      const guideData = [
+        {
+          'NO': '1',
+          'KOLOM': 'nik',
+          'WAJIB': 'YA',
+          'TIPE DATA': 'Angka (16 digit)',
+          'CONTOH': '3201123456789012',
+          'KETERANGAN': 'Nomor Induk Kependudukan, harus 16 digit angka',
+          'NILAI YANG DIIZINKAN': 'Angka saja, 16 digit'
+        },
+        {
+          'NO': '2',
+          'KOLOM': 'nama_anggota',
+          'WAJIB': 'YA',
+          'TIPE DATA': 'Teks',
+          'CONTOH': 'Ahmad Supriadi',
+          'KETERANGAN': 'Nama lengkap anggota',
+          'NILAI YANG DIIZINKAN': 'Huruf dan spasi'
+        },
+        {
+          'NO': '3',
+          'KOLOM': 'nama_cabang',
+          'WAJIB': 'YA',
+          'TIPE DATA': 'Teks',
+          'CONTOH': 'Cabang Jakarta',
+          'KETERANGAN': 'Nama cabang tempat anggota terdaftar',
+          'NILAI YANG DIIZINKAN': 'Teks sesuai nama cabang'
+        },
+        {
+          'NO': '4',
+          'KOLOM': 'kategori_anggota',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'biasa',
+          'KETERANGAN': 'Kategori keanggotaan',
+          'NILAI YANG DIIZINKAN': 'biasa, luar_biasa, kehormatan'
+        },
+        {
+          'NO': '5',
+          'KOLOM': 'status_anggota',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'pegawai',
+          'KETERANGAN': 'Status kepegawaian',
+          'NILAI YANG DIIZINKAN': 'pegawai, purnawirawan, pegawai_swasta, lainnya'
+        },
+        {
+          'NO': '6',
+          'KOLOM': 'status_mps',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'non_mps',
+          'KETERANGAN': 'Status MPS (Masa Persiapan Pensiun)',
+          'NILAI YANG DIIZINKAN': 'mps, non_mps'
+        },
+        {
+          'NO': '7',
+          'KOLOM': 'status_iuran',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'iuran',
+          'KETERANGAN': 'Status pembayaran iuran',
+          'NILAI YANG DIIZINKAN': 'iuran, tidak_iuran (HANYA dua nilai ini!)'
+        },
+        {
+          'NO': '8',
+          'KOLOM': 'posisi_kepengurusan',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Teks',
+          'CONTOH': 'anggota',
+          'KETERANGAN': 'Posisi dalam struktur kepengurusan',
+          'NILAI YANG DIIZINKAN': 'anggota, ketua, sekretaris, bendahara, dll'
+        },
+        {
+          'NO': '9',
+          'KOLOM': 'status_perkawinan',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'kawin',
+          'KETERANGAN': 'Status perkawinan',
+          'NILAI YANG DIIZINKAN': 'kawin, tidak_kawin, janda, duda'
+        },
+        {
+          'NO': '10',
+          'KOLOM': 'jenis_kelamin',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'laki_laki',
+          'KETERANGAN': 'Jenis kelamin',
+          'NILAI YANG DIIZINKAN': 'laki_laki, perempuan (pakai underscore, bukan spasi)'
+        },
+        {
+          'NO': '11',
+          'KOLOM': 'agama',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'islam',
+          'KETERANGAN': 'Agama',
+          'NILAI YANG DIIZINKAN': 'islam, kristen, katolik, hindu, budha, konghucu'
+        },
+        {
+          'NO': '12',
+          'KOLOM': 'tanggal_lahir',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Tanggal',
+          'CONTOH': '1960-01-01',
+          'KETERANGAN': 'Tanggal lahir (format: YYYY-MM-DD)',
+          'NILAI YANG DIIZINKAN': 'Format tanggal: YYYY-MM-DD (contoh: 1960-01-31)'
+        },
+        {
+          'NO': '13',
+          'KOLOM': 'golongan_darah',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'A',
+          'KETERANGAN': 'Golongan darah',
+          'NILAI YANG DIIZINKAN': 'A, B, AB, O'
+        },
+        {
+          'NO': '14',
+          'KOLOM': 'besaran_iuran',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Angka',
+          'CONTOH': '100000',
+          'KETERANGAN': 'Besaran iuran dalam Rupiah',
+          'NILAI YANG DIIZINKAN': 'Angka saja, tanpa titik atau koma (contoh: 100000)'
+        },
+        {
+          'NO': '15',
+          'KOLOM': 'form_kesediaan_iuran',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Boolean',
+          'CONTOH': 'true',
+          'KETERANGAN': 'Status pengisian form kesediaan iuran',
+          'NILAI YANG DIIZINKAN': 'true, false (HURUF KECIL, tanpa kutip)'
+        },
+        {
+          'NO': '16',
+          'KOLOM': 'status_bpjs',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Boolean',
+          'CONTOH': 'true',
+          'KETERANGAN': 'Status kepesertaan BPJS',
+          'NILAI YANG DIIZINKAN': 'true, false (HURUF KECIL, tanpa kutip)'
+        },
+        {
+          'NO': '17',
+          'KOLOM': 'bpjs_kelas',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Angka',
+          'CONTOH': '1',
+          'KETERANGAN': 'Kelas BPJS',
+          'NILAI YANG DIIZINKAN': '1, 2, 3, 4 (angka saja)'
+        },
+        {
+          'NO': '18',
+          'KOLOM': 'bpjs_insentif',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Boolean',
+          'CONTOH': 'false',
+          'KETERANGAN': 'Status penerimaan insentif BPJS',
+          'NILAI YANG DIIZINKAN': 'true, false (HURUF KECIL, tanpa kutip)'
+        },
+        {
+          'NO': '19',
+          'KOLOM': 'sk_pensiun',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Pilihan',
+          'CONTOH': 'tidak_ada',
+          'KETERANGAN': 'Status kepemilikan SK pensiun',
+          'NILAI YANG DIIZINKAN': 'ada, tidak_ada (pakai underscore)'
+        },
+        {
+          'NO': '20',
+          'KOLOM': 'nomor_handphone',
+          'WAJIB': 'TIDAK',
+          'TIPE DATA': 'Angka',
+          'CONTOH': '08123456789',
+          'KETERANGAN': 'Nomor handphone/WA',
+          'NILAI YANG DIIZINKAN': 'Angka saja, diawali 08xxx (10-13 digit)'
+        },
+        {
+          'NO': '',
+          'KOLOM': '',
+          'WAJIB': '',
+          'TIPE DATA': '',
+          'CONTOH': '',
+          'KETERANGAN': 'CATATAN PENTING:',
+          'NILAI YANG DIIZINKAN': '• Hapus baris contoh ini sebelum mengisi data sebenarnya\n• Field bertanda YA di kolom WAJIB harus diisi\n• Untuk field pilihan, gunakan PERSIS seperti yang tertera di kolom NILAI YANG DIIZINKAN\n• Untuk field boolean (true/false), gunakan huruf KECIL tanpa tanda kutip\n• Untuk field angka, jangan gunakan format ribuan (titik/koma)\n• Simpan file dengan format .xlsx atau .xls'
+        }
+      ];
+
+      const guideWorksheet = XLSX.utils.json_to_sheet(guideData);
+
+      // Set column widths for guide sheet
+      guideWorksheet['!cols'] = [
+        { wch: 5 },   // NO
+        { wch: 20 },  // KOLOM
+        { wch: 8 },   // WAJIB
+        { wch: 15 },  // TIPE DATA
+        { wch: 20 },  // CONTOH
+        { wch: 40 },  // KETERANGAN
+        { wch: 50 },  // NILAI YANG DIIZINKAN
+      ];
+
       // Create workbook
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Template');
+      XLSX.utils.book_append_sheet(workbook, guideWorksheet, 'Panduan');
 
       // Generate and download file
       XLSX.writeFile(workbook, 'template_import_anggota.xlsx');
 
       toast.success('Template berhasil diunduh', {
-        description: 'Gunakan template ini untuk mengisi data anggota. Field wajib: NIK, Nama Anggota, Nama Cabang',
+        description: 'Template berisi 2 sheet: "Template" untuk mengisi data dan "Panduan" untuk referensi. Field wajib: NIK, Nama Anggota, Nama Cabang',
         icon: <CheckCircle className="h-4 w-4" />
       });
     } catch (error) {
@@ -303,7 +510,7 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
             Import Data Anggota dari Excel
           </DialogTitle>
           <DialogDescription>
-            Upload file Excel untuk menambahkan data anggota secara massal
+            Upload file Excel untuk menambahkan data anggota secara massal. Download template untuk melihat format dan panduan pengisian.
           </DialogDescription>
           <Button
             variant="outline"
@@ -393,6 +600,16 @@ export function ImportExcelModal({ open, onClose, onImport }: ImportExcelModalPr
             <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
               Field lain akan diisi dengan nilai default jika tidak ada di Excel
             </p>
+            <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-800">
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                <strong>💡 Tips:</strong> Lihat sheet "Panduan" di template untuk informasi lengkap tentang:
+              </p>
+              <ul className="text-xs text-blue-700 dark:text-blue-300 mt-1 ml-4 list-disc">
+                <li>Tipe data yang harus diisi (angka/teks/pilihan)</li>
+                <li>Nilai yang diizinkan untuk setiap field</li>
+                <li>Contoh pengisian yang benar</li>
+              </ul>
+            </div>
           </div>
 
           {/* Preview Section */}

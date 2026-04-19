@@ -203,13 +203,7 @@ export function DetailModal({ open, onClose, member, onWariskanNik }: DetailModa
               </div>
               <div>
                 <label className="text-sm text-muted-foreground">Posisi Kepengurusan</label>
-                <Badge
-                  variant={member.posisi_kepengurusan === 'Ketua' ? 'success' : member.posisi_kepengurusan === 'Anggota' ? 'secondary' : 'warning'}
-                  appearance="ghost"
-                  className="text-xs"
-                >
-                  {member.posisi_kepengurusan || '-'}
-                </Badge>
+                <div className="text-sm font-medium">{member.posisi_kepengurusan}</div>
               </div>
               <div>
                 <label className="text-sm text-muted-foreground">SK Pensiun</label>
