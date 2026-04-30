@@ -127,7 +127,7 @@ export function DanaKematianDetailModal({ open, onClose, claim, onRefresh }: Dan
           window.location.href = '/pelayanan/dana-kematian';
         }, 1000);
       } else {
-        throw new Error(updateMutation.error || 'Update failed');
+        throw new Error(updateMutation.error?.message || 'Update failed');
       }
     } catch (error) {
       console.error('[handleVerifyAndSendToPusat] Error:', error);
@@ -175,7 +175,7 @@ export function DanaKematianDetailModal({ open, onClose, claim, onRefresh }: Dan
           window.location.href = '/pelayanan/dana-kematian';
         }, 1000);
       } else {
-        throw new Error(updateMutation.error || 'Finalization failed');
+        throw new Error(updateMutation.error?.message || 'Finalization failed');
       }
     } catch (error) {
       console.error('[handleFinalize] Error:', error);
