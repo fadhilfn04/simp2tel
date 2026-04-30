@@ -141,7 +141,7 @@ export function ReportGenerationSystem({
 
   const reports = [
     {
-      key: 'file_berita_acara',
+      key: 'file_berita_acara' as keyof DanaKematian,
       name: 'Berita Acara Penyerahan',
       description: 'Dokumentasi penyerahan dana kepada ahli waris',
       required: true,
@@ -149,7 +149,7 @@ export function ReportGenerationSystem({
       color: 'blue'
     },
     {
-      key: 'file_laporan_keuangan',
+      key: 'file_laporan_keuangan' as keyof DanaKematian,
       name: 'Laporan Keuangan',
       description: 'Rekonsiliasi dana yang diterima dan diserahkan',
       required: true,
@@ -157,7 +157,7 @@ export function ReportGenerationSystem({
       color: 'green'
     },
     {
-      key: 'file_laporan_feedback',
+      key: 'file_laporan_feedback' as keyof DanaKematian,
       name: 'Laporan Feedback',
       description: 'Umpan balik dari ahli waris tentang proses',
       required: true,
