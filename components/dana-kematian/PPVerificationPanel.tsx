@@ -366,7 +366,7 @@ export function PPVerificationPanel({ claim, onVerificationComplete, readonly = 
                           <div className="flex flex-col gap-2">
                             <Button
                               size="sm"
-                              variant={verification.verified ? 'default' : 'outline'}
+                              variant={verification.verified ? 'primary' : 'outline'}
                               onClick={() => toggleDocumentVerification(doc.key, !verification.verified)}
                               className="gap-1"
                             >
