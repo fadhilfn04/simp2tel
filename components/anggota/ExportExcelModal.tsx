@@ -416,7 +416,7 @@ export function ExportExcelModal({ open, onClose, data, totalCount, onFetchAllDa
                         >
                           <span className="truncate">{field.label}</span>
                           {field.required && (
-                            <Badge variant="default" className="text-xs py-0 px-1.5 h-4">
+                            <Badge variant="secondary" className="text-xs py-0 px-1.5 h-4">
                               Wajib
                             </Badge>
                           )}
