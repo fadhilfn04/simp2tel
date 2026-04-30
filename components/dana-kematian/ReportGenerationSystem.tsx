@@ -67,6 +67,15 @@ interface ReportGenerationSystemProps {
   readonly?: boolean;
 }
 
+// Helper function to generate report numbers
+const generateReportNumber = (type: 'BA' | 'LK' | 'LF') => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const random = Math.floor(Math.random() * 1000).toString().padStart(4, '0');
+  return `${type}/DAKEM/${year}${month}/${random}`;
+};
+
 export function ReportGenerationSystem({
   claim,
   onUpdate,
@@ -82,14 +91,6 @@ export function ReportGenerationSystem({
   const getReportStatus = (fileUrl: string | null) => {
     if (!fileUrl) return { status: 'missing', label: 'Belum Dibuat', icon: AlertCircle };
     return { status: 'completed', label: 'Selesai', icon: CheckCircle2 };
-  };
-
-  const generateReportNumber = (type: 'BA' | 'LK' | 'LF') => {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(4, '0');
-    return `${type}/DAKEM/${year}${month}/${random}`;
   };
 
   const handleSaveBeritaAcara = () => {
@@ -166,7 +167,7 @@ export function ReportGenerationSystem({
     }
   ];
 
-  const completedReports = reports.filter(r => claim[r.key]).length;
+  const completedReports = reports.filter(r => !!claim[r.key]).length;
 
   if (!canGenerateReports && !readonly) {
     return null;
@@ -208,28 +209,28 @@ export function ReportGenerationSystem({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {reports.map((report) => {
             const ReportIcon = report.icon;
-            const reportStatus = getReportStatus(claim[report.key]);
+            const reportStatus = getReportStatus((claim[report.key] as string | null) || null);
             const StatusIcon = reportStatus.icon;
 
             return (
               <div
                 key={report.key}
                 className={`p-4 border rounded-lg ${
-                  claim[report.key] ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
+                  !!claim[report.key] ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <div className={`p-2 rounded-lg ${
-                    claim[report.key] ? 'bg-green-100' : `bg-${report.color}-100`
+                    !!claim[report.key] ? 'bg-green-100' : `bg-${report.color}-100`
                   }`}>
                     <ReportIcon className={`h-5 w-5 ${
-                      claim[report.key] ? 'text-green-600' : `text-${report.color}-600`
+                      !!claim[report.key] ? 'text-green-600' : `text-${report.color}-600`
                     }`} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="font-medium text-sm">{report.name}</h4>
-                      <Badge variant={claim[report.key] ? 'success' : 'secondary'} className="text-xs">
+                      <Badge variant={!!claim[report.key] ? 'success' : 'secondary'} className="text-xs">
                         {reportStatus.label}
                       </Badge>
                     </div>
@@ -238,7 +239,7 @@ export function ReportGenerationSystem({
                     </p>
                   </div>
                   <div className="flex items-center gap-1">
-                    {claim[report.key] && (
+                    {!!claim[report.key] && (
                       <>
                         <Button
                           size="sm"
@@ -307,14 +308,14 @@ export function ReportGenerationSystem({
           {reports.map((report) => (
             <Button
               key={report.key}
-              onClick={() => setActiveTab(report.key as any)}
-              variant={claim[report.key] ? 'outline' : 'default'}
+              onClick={() => setActiveTab(report.key as 'berita_acara' | 'laporan_keuangan' | 'laporan_feedback')}
+              variant={!!claim[report.key] ? 'outline' : 'primary'}
               size="sm"
               disabled={!!claim[report.key]}
               className="gap-1"
             >
               <FileText className="h-4 w-4" />
-              {claim[report.key] ? 'Edit' : 'Buat'} {report.name}
+              {!!claim[report.key] ? 'Edit' : 'Buat'} {report.name}
             </Button>
           ))}
         </div>
